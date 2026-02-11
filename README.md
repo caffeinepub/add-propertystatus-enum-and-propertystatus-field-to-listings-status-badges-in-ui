@@ -1,2 +1,3 @@
-# add-propertystatus-enum-and-propertystatus-field-to-listings-status-badges-in-ui
-Exported from Caffeine project: Add PropertyStatus enum and propertyStatus field to listings + status badges in UI
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

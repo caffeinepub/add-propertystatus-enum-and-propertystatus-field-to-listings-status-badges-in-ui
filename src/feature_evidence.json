@@ -1,0 +1,90 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-frontend-update-generated-consumed-backend-types-so-the-frontend-listing-type-includes-propertystatus-and-the-frontend-can-render-it-without-typescript-errors",
+      "featureTitle": "Frontend: Update generated/consumed backend types so the frontend `Listing` type includes `propertyStatus` and the frontend can render it without TypeScript errors.",
+      "files": [],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-frontend-add-a-dynamic-propertystatus-badge-to-the-property-card-component-frontend-src-components-listingcard-tsx-that-reflects-the-listing-s-propertystatus-value-with-clear-english-labels-available-visit-completed-under-confirmation-booked-via-styo",
+      "featureTitle": "Frontend: Add a dynamic `propertyStatus` badge to the property card component (`frontend/src/components/ListingCard.tsx`) that reflects the listing’s `propertyStatus` value with clear English labels: \"Available\", \"Visit Completed\", \"Under Confirmation\", \"Booked via STYO\".",
+      "files": [
+        "frontend/src/components/ListingCard.tsx",
+        "frontend/src/components/PropertyStatusBadge.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-frontend-add-a-dynamic-propertystatus-badge-to-the-property-detail-page-current-route-unlock-listingid-frontend-src-pages-unlockpage-tsx-that-reflects-the-listing-s-propertystatus-value-using-the-same-4-english-labels",
+      "featureTitle": "Frontend: Add a dynamic `propertyStatus` badge to the property detail page (current route `/unlock/$listingId`, `frontend/src/pages/UnlockPage.tsx`) that reflects the listing’s `propertyStatus` value using the same 4 English labels.",
+      "files": [
+        "frontend/src/pages/UnlockPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-scope-guard-do-not-implement-any-ist-dual-confirmation-or-automatic-status-update-logic-yet-only-add-the-4-status-model-and-ui-display",
+      "featureTitle": "Scope guard: Do not implement any IST dual-confirmation or automatic status-update logic yet; only add the 4-status model and UI display.",
+      "files": [
+        "frontend/src/components/ListingCard.tsx",
+        "frontend/src/components/PropertyStatusBadge.tsx",
+        "frontend/src/pages/UnlockPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-11T02:25:00.361Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 7,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Backend: Add a new enum type `PropertyStatus` with exactly these variants: `#available`, `#visitCompleted`, `#underConfirmation`, `#bookedViaSTYO`.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Backend: Extend the `Listing` record to include a new field `propertyStatus : PropertyStatus` while keeping the existing `availability` field unchanged.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Backend: Ensure default value for `propertyStatus` is `#available` for (a) all newly created listings and (b) all existing listings returned by queries (including any demo listings, if present), without changing existing `availability` values.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Frontend: Update generated/consumed backend types so the frontend `Listing` type includes `propertyStatus` and the frontend can render it without TypeScript errors.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/backend.d.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/backend.d.ts"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Frontend: Add a dynamic `propertyStatus` badge to the property card component (`frontend/src/components/ListingCard.tsx`) that reflects the listing’s `propertyStatus` value with clear English labels: \"Available\", \"Visit Completed\", \"Under Confirmation\", \"Booked via STYO\".",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/PropertyStatusBadge.tsx",
+          "frontend/src/components/ListingCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/PropertyStatusBadge.tsx",
+          "frontend/src/components/ListingCard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Frontend: Add a dynamic `propertyStatus` badge to the property detail page (current route `/unlock/$listingId`, `frontend/src/pages/UnlockPage.tsx`) that reflects the listing’s `propertyStatus` value using the same 4 English labels.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/UnlockPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/UnlockPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Scope guard: Do not implement any IST dual-confirmation or automatic status-update logic yet; only add the 4-status model and UI display.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/PropertyStatusBadge.tsx",
+          "frontend/src/components/ListingCard.tsx",
+          "frontend/src/pages/UnlockPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/PropertyStatusBadge.tsx",
+          "frontend/src/components/ListingCard.tsx",
+          "frontend/src/pages/UnlockPage.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/frontend/canister.yaml",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/ListingCard.tsx",
+    "frontend/src/components/ListingCard3D.tsx",
+    "frontend/src/components/PropertyStatusBadge.tsx",
+    "frontend/src/config.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/pages/UnlockPage.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
