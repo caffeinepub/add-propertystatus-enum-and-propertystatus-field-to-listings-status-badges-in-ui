@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T02:33:47.444Z",
+  "generatedAt": "2026-02-11T02:39:27.999Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,8 +11,8 @@
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-8",
-        "summary": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
+        "id": "REQ-9",
+        "summary": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []

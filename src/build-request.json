@@ -1,37 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Set default PropertyStatus to #available when creating new listings",
-  "priority": "normal",
+  "title": "Backend: Default new Listing.propertyStatus to #available on creation",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-8",
-      "text": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
+      "id": "REQ-9",
+      "text": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-3"
         ],
         "quotes": [
-          "When a new Listing is created, what is the default value of propertyStatus?\nEnsure it is set to #available during creation."
+          "Update the Listing creation function so that:\npropertyStatus = #available\n\nwhenever a new Listing is created.\n\nDo not modify anything else."
         ]
       },
       "acceptanceCriteria": [
-        "Creating a new listing results in `Listing.propertyStatus == #available` in the stored record and in the value returned by listing queries.",
-        "This defaulting behavior applies to all listing-creation entry points (e.g., owner property creation flows, public submission flows, and any demo/seed listing creation logic if present).",
-        "No other listing fields (including the existing `availability` field) are changed as part of this update."
+        "Creating a new listing via the existing backend API results in the stored and returned `Listing` having `propertyStatus` equal to `#available`.",
+        "All backend code paths that create a new `Listing` set `propertyStatus` explicitly at creation time (no reliance on implicit defaults).",
+        "No other listing fields, query behavior, authorization behavior, or frontend behavior are changed."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko canister; keep all logic in `backend/main.mo`.",
-    "Use English for any user-facing text.",
-    "Do not edit files under `frontend/src/components/ui` or any other frontend immutable paths listed in SYSTEM_CONTEXT.",
-    "Do not implement any IST dual-confirmation, automatic status transitions, or booking-driven status updates; only set the initial default on creation."
+    "Do not modify anything other than setting `propertyStatus = #available` at new `Listing` creation time in `backend/main.mo`.",
+    "Do not change the `availability` field or its behavior.",
+    "Do not add IST dual-confirmation logic or any automatic status transitions."
   ],
   "nonGoals": [
-    "Adding any new API for updating `propertyStatus` after creation.",
-    "Implementing logic to automatically change `propertyStatus` based on bookings, approvals, unlocks, or other events.",
-    "Changing or reinterpreting the existing `availability` model."
+    "Adding UI changes or any frontend updates.",
+    "Updating existing listings’ `propertyStatus` values (this request is only about newly created listings).",
+    "Adding new endpoints or changing API shapes beyond ensuring the creation logic sets `propertyStatus`."
   ],
   "imageRequirements": {
     "required": [],

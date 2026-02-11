@@ -16,8 +16,6 @@ import AccessControl "authorization/access-control";
 import Stripe "stripe/Stripe";
 import StripeMixin "stripe/StripeMixin";
 
-
-
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -1652,4 +1650,3 @@ actor {
 
   var caches = Map.empty<Nat, Map.Map<Nat, Listing>>();
 };
-

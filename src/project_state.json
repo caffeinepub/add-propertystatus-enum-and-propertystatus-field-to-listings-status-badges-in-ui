@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 7,
   "summary": "Upgrade platform listing model and UI to support a new dynamic PropertyStatus system (separate from existing availability), as a foundation for future IST dual-confirmation booking flow.",
   "architectural_notes": [
     "Introduce a new PropertyStatus enum (available, visitCompleted, underConfirmation, bookedViaSTYO) separate from existing Listing.availability; store as Listing.propertyStatus with default 'available' for existing and new listings.",
@@ -8,7 +8,7 @@
     "Ensure `propertyStatus` is explicitly set to `#available` in the listing-creation code path (not just relied on implicitly), so all newly created listings default to `#available`. "
   ],
   "known_issues": [],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-frontend-update-generated-consumed-backend-types-so-the-frontend-listing-type-includes-propertystatus-and-the-frontend-can-render-it-without-typescript-errors",
@@ -79,6 +79,14 @@
       "summary": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
       "reqIds": [
         "REQ-8"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
+      "reqIds": [
+        "REQ-9"
       ],
       "status": "pending"
     }

@@ -1,28 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T02:33:47.441Z",
-  "summary": "REQ-8 asks to explicitly default `Listing.propertyStatus` to `#available` in every listing-creation code path in `backend/main.mo`. The diff snippet shows the `PropertyStatus` type and `Listing.propertyStatus` field definition, but the provided truncated diff does not show any listing-creation functions or record-construction sites where `propertyStatus = #available` is actually set. An additional modification to `project_state.json` appears unrelated to the requested backend-only defaulting change.",
+  "generatedAt": "2026-02-11T02:39:27.996Z",
+  "summary": "The diff does not provide evidence that new Listing creation paths in `backend/main.mo` now explicitly set `propertyStatus = #available`. Additionally, `project_state.json` was modified, which violates the constraint to only change Listing creation-time defaulting in `backend/main.mo`.",
   "missing_requirements": [
     {
-      "id": "REQ-8",
-      "requirement": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
-      "reason": "The truncated `backend/main.mo` diff shows the `propertyStatus : PropertyStatus` field exists on `Listing`, but does not provide evidence of any listing creation/insert/update code paths explicitly assigning `propertyStatus = #available` when constructing new `Listing` records (including any demo/seed logic).",
+      "id": "REQ-9",
+      "requirement": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available` across every code path that constructs/stores a new `Listing`.",
+      "reason": "The provided truncated `backend/main.mo` excerpt only shows type/record definitions (including `PropertyStatus` and `Listing.propertyStatus`) and does not show any listing-construction code paths being updated to explicitly assign `propertyStatus = #available` at creation time. With the diff truncated, there is insufficient evidence that the creation logic was updated as required.",
       "evidence": [
-        "backend/main.mo (truncated)"
+        "backend/main.mo (truncated; shows type definitions but no listing creation logic)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated/added project metadata describing broader PropertyStatus system and frontend-related features in `project_state.json`.",
-      "reason": "The BuildRequest constraints emphasize keeping logic in `backend/main.mo` and only setting the initial default on listing creation; updating `project_state.json` is not requested as part of REQ-8.",
+      "description": "Modified `project_state.json` content unrelated to setting `propertyStatus = #available` at Listing creation time in `backend/main.mo`.",
+      "reason": "BuildRequest constraint explicitly says: \"Do not modify anything other than setting `propertyStatus = #available` at new `Listing` creation time in `backend/main.mo`.\" Any change to `project_state.json` is out of scope.",
       "evidence": [
-        "project_state.json (truncated)"
+        "project_state.json (modified)"
+      ]
+    },
+    {
+      "description": "Potential broader backend model/type changes shown in `backend/main.mo` (e.g., presence of `PropertyStatus` type and `Listing.propertyStatus` field) beyond the narrowly-scoped creation-time defaulting change.",
+      "reason": "The request scope is limited to setting `propertyStatus = #available` at creation time and forbids other modifications. The truncated diff excerpt for `backend/main.mo` prominently includes `PropertyStatus` and `propertyStatus` in the `Listing` record, which may indicate additional changes beyond creation-time assignment; however, due to truncation, it cannot be confirmed what exactly changed.",
+      "evidence": [
+        "backend/main.mo (truncated; includes `public type PropertyStatus` and `Listing` includes `propertyStatus : PropertyStatus`)"
       ]
     }
   ],
-  "confidence": 0.63,
+  "confidence": 0.64,
   "changed_files": [
     "backend/main.mo",
     "project_state.json"

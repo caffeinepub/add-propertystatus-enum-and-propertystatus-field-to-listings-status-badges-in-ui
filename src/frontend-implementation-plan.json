@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Set default PropertyStatus to #available when creating new listings (frontend-only scope)",
+  "title": "Frontend: No changes required for default Listing.propertyStatus on creation",
   "requirements": []
 }

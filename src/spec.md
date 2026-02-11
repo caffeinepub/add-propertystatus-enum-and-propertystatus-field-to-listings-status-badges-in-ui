@@ -1,10 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Ensure all newly created `Listing` records have `propertyStatus` set to `#available` at creation time.
+**Goal:** Ensure every newly created backend `Listing` explicitly defaults `propertyStatus` to `#available`.
 
 **Planned changes:**
-- Update every listing-creation code path in `backend/main.mo` to explicitly set `propertyStatus = #available` when constructing and storing a new `Listing`.
-- Verify this applies consistently across all listing-creation entry points (including any owner flows, public submission flows, and any demo/seed listing creation logic if present).
+- Update `backend/main.mo` listing creation logic to set `propertyStatus = #available` whenever constructing and storing a new `Listing`.
+- Apply the explicit `propertyStatus` assignment across all code paths that create new listings (including owner/user-created, public submission flows that become listings, and any demo/seed creation if present).
 
-**User-visible outcome:** Any newly created listing is stored and returned by listing queries with `propertyStatus` set to `#available` by default.
+**User-visible outcome:** Newly created listings returned by the existing backend API have `propertyStatus` set to `#available` by default, with no other behavior changes.
