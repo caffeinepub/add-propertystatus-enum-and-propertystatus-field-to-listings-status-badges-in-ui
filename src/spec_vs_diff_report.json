@@ -1,88 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T02:25:00.358Z",
-  "summary": "Diff adds `PropertyStatus` and `propertyStatus` to the backend `Listing` type, adds a frontend `PropertyStatusBadge` component, and wires badge usage into listing UI files. However, some requirements cannot be confirmed from the truncated diff (notably defaulting `propertyStatus` on new listing creation and actual rendering on `UnlockPage`). The diff also introduces changes/files not requested and appears to violate stated constraints (new backend module for migration; edits to an immutable hook path).",
+  "generatedAt": "2026-02-11T02:33:47.441Z",
+  "summary": "REQ-8 asks to explicitly default `Listing.propertyStatus` to `#available` in every listing-creation code path in `backend/main.mo`. The diff snippet shows the `PropertyStatus` type and `Listing.propertyStatus` field definition, but the provided truncated diff does not show any listing-creation functions or record-construction sites where `propertyStatus = #available` is actually set. An additional modification to `project_state.json` appears unrelated to the requested backend-only defaulting change.",
   "missing_requirements": [
     {
-      "id": "REQ-3",
-      "requirement": "Ensure default value for `propertyStatus` is `#available` for all newly created listings (create-listing flows) and for all existing listings returned by queries, without changing existing `availability` values.",
-      "reason": "The diff shows a migration that backfills existing stored listings/maps with `propertyStatus = #available`, but the truncated `backend/main.mo` excerpt does not show the listing creation logic being updated to set `propertyStatus` by default for newly created listings.",
+      "id": "REQ-8",
+      "requirement": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
+      "reason": "The truncated `backend/main.mo` diff shows the `propertyStatus : PropertyStatus` field exists on `Listing`, but does not provide evidence of any listing creation/insert/update code paths explicitly assigning `propertyStatus = #available` when constructing new `Listing` records (including any demo/seed logic).",
       "evidence": [
-        "backend/migration.mo",
         "backend/main.mo (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Update generated/consumed backend types so the frontend `Listing` type includes `propertyStatus` and is strongly typed with no `any` workarounds.",
-      "reason": "Frontend code imports `PropertyStatus`/`Listing` from `../backend`, but the diff summary does not include changes to the generated candid/TS bindings file(s), so strong typing cannot be verified from the provided evidence.",
-      "evidence": [
-        "frontend/src/components/PropertyStatusBadge.tsx",
-        "frontend/src/components/ListingCard.tsx",
-        "frontend/src/components/ListingCard3D.tsx"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "Add a dynamic `propertyStatus` badge to `frontend/src/components/ListingCard.tsx` with the exact four English labels and safe fallback to \"Available\" when missing at runtime.",
-      "reason": "`ListingCard.tsx` is truncated before the JSX where the badge would be rendered. While it imports `PropertyStatusBadge`, the diff excerpt does not confirm the badge is actually rendered on the card.",
-      "evidence": [
-        "frontend/src/components/ListingCard.tsx (truncated)",
-        "frontend/src/components/PropertyStatusBadge.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Add a dynamic `propertyStatus` badge to `frontend/src/pages/UnlockPage.tsx` with the same four English labels; visible whenever listing data is visible (before/after unlock).",
-      "reason": "`UnlockPage.tsx` is truncated before the relevant JSX; although it imports `PropertyStatusBadge`, the diff excerpt does not show it being rendered.",
-      "evidence": [
-        "frontend/src/pages/UnlockPage.tsx (truncated)",
-        "frontend/src/components/PropertyStatusBadge.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Introduced a separate backend migration module (`backend/migration.mo`) and wired it into `backend/main.mo` via `(with migration = Migration.run)`.",
-      "reason": "BuildRequest constraints explicitly require a single-actor Motoko architecture with all logic in `backend/main.mo`. Adding a new backend module to implement logic is not requested and appears to violate this constraint.",
+      "description": "Updated/added project metadata describing broader PropertyStatus system and frontend-related features in `project_state.json`.",
+      "reason": "The BuildRequest constraints emphasize keeping logic in `backend/main.mo` and only setting the initial default on listing creation; updating `project_state.json` is not requested as part of REQ-8.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Modified `frontend/src/hooks/useInternetIdentity.ts`.",
-      "reason": "BuildRequest constraint states that \"immutable hook paths must not be edited.\" This hook change was not requested as part of adding `propertyStatus` badges/types.",
-      "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts"
-      ]
-    },
-    {
-      "description": "Added `project_state.json`.",
-      "reason": "Not requested by any requirement; appears to be meta/project tracking content unrelated to the implementation requirements.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "description": "Updated/added property status badge usage in `frontend/src/components/ListingCard3D.tsx`.",
-      "reason": "Requirements specify badges in `ListingCard.tsx` and `UnlockPage.tsx` only; changes to `ListingCard3D.tsx` were not requested.",
-      "evidence": [
-        "frontend/src/components/ListingCard3D.tsx"
+        "project_state.json (truncated)"
       ]
     }
   ],
-  "confidence": 0.68,
+  "confidence": 0.63,
   "changed_files": [
     "backend/main.mo",
-    "backend/migration.mo",
-    "frontend-file-summaries.txt",
-    "frontend/src/components/ListingCard.tsx",
-    "frontend/src/components/ListingCard3D.tsx",
-    "frontend/src/components/PropertyStatusBadge.tsx",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/pages/UnlockPage.tsx",
     "project_state.json"
   ]
 }

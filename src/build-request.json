@@ -1,139 +1,37 @@
 {
   "kind": "build_request",
-  "title": "Add PropertyStatus enum and propertyStatus field to listings + status badges in UI",
+  "title": "Set default PropertyStatus to #available when creating new listings",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Backend: Add a new enum type `PropertyStatus` with exactly these variants: `#available`, `#visitCompleted`, `#underConfirmation`, `#bookedViaSTYO`.",
+      "id": "REQ-8",
+      "text": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-user-1"
         ],
         "quotes": [
-          "Create a new enum called PropertyStatus with these values:\n\n- available\n- visitCompleted\n- underConfirmation\n- bookedViaSTYO"
+          "When a new Listing is created, what is the default value of propertyStatus?\nEnsure it is set to #available during creation."
         ]
       },
       "acceptanceCriteria": [
-        "`backend/main.mo` defines a `PropertyStatus` type with the 4 required variants and no additional variants."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Backend: Extend the `Listing` record to include a new field `propertyStatus : PropertyStatus` while keeping the existing `availability` field unchanged.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Add a new propertyStatus field to the Listing model.\n\nKeep the existing availability field unchanged.\n\nUpdate the backend Listing record to include:\n\npropertyStatus : PropertyStatus"
-        ]
-      },
-      "acceptanceCriteria": [
-        "`Listing` type includes `propertyStatus : PropertyStatus`.",
-        "`Listing` type still includes the existing `availability : AvailabilityStatus` field unchanged (same name and type)."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Backend: Ensure default value for `propertyStatus` is `#available` for (a) all newly created listings and (b) all existing listings returned by queries (including any demo listings, if present), without changing existing `availability` values.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Default value for all existing and new listings should be:\npropertyStatus = available"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Creating a listing via existing create-listing flows results in `propertyStatus` being `#available` unless explicitly set otherwise (no new confirmation logic).",
-        "All existing listings returned from `getListings`, `getListing`, and related listing query methods include `propertyStatus` and it is `#available` if the listing previously existed before this field was added.",
-        "No existing listing’s `availability` value is modified as part of setting `propertyStatus` defaults."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Frontend: Update generated/consumed backend types so the frontend `Listing` type includes `propertyStatus` and the frontend can render it without TypeScript errors.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Then update the frontend to display a status badge ... Badge should reflect propertyStatus dynamically."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Frontend compiles successfully with the updated candid/types such that `Listing.propertyStatus` is available and strongly typed.",
-        "No TypeScript `any` workarounds are introduced to access `propertyStatus`."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Frontend: Add a dynamic `propertyStatus` badge to the property card component (`frontend/src/components/ListingCard.tsx`) that reflects the listing’s `propertyStatus` value with clear English labels: \"Available\", \"Visit Completed\", \"Under Confirmation\", \"Booked via STYO\".",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Then update the frontend to display a status badge on:\n\n1) Property card\n\nBadge should reflect propertyStatus dynamically."
-        ]
-      },
-      "acceptanceCriteria": [
-        "`ListingCard` renders a status badge based on `listing.propertyStatus` for all 4 statuses.",
-        "Badge text uses English labels exactly corresponding to the 4 statuses.",
-        "If a listing is missing `propertyStatus` at runtime for any reason, the UI falls back to displaying \"Available\" rather than crashing."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Frontend: Add a dynamic `propertyStatus` badge to the property detail page (current route `/unlock/$listingId`, `frontend/src/pages/UnlockPage.tsx`) that reflects the listing’s `propertyStatus` value using the same 4 English labels.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Then update the frontend to display a status badge on:\n\n2) Property detail page\n\nBadge should reflect propertyStatus dynamically."
-        ]
-      },
-      "acceptanceCriteria": [
-        "`UnlockPage` displays a property status badge based on `listing.propertyStatus` for all 4 statuses.",
-        "Badge stays consistent with the property card labels (Available, Visit Completed, Under Confirmation, Booked via STYO).",
-        "Page renders without errors before and after unlock (badge is visible whenever listing data is visible)."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Scope guard: Do not implement any IST dual-confirmation or automatic status-update logic yet; only add the 4-status model and UI display.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Do not implement confirmation logic yet.\nOnly add the 4-status model and UI display."
-        ]
-      },
-      "acceptanceCriteria": [
-        "No new backend methods, timers, or workflows are added to automatically change `propertyStatus` based on actions.",
-        "No owner/customer confirmation UI flows are added as part of this change."
+        "Creating a new listing results in `Listing.propertyStatus == #available` in the stored record and in the value returned by listing queries.",
+        "This defaulting behavior applies to all listing-creation entry points (e.g., owner property creation flows, public submission flows, and any demo/seed listing creation logic if present).",
+        "No other listing fields (including the existing `availability` field) are changed as part of this update."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko architecture (all logic in `backend/main.mo`).",
-    "Do not modify `availability` field semantics, type, or existing UI behavior for availability.",
-    "Frontend files under `frontend/src/components/ui` and immutable hook paths must not be edited."
+    "Backend must remain a single-actor Motoko canister; keep all logic in `backend/main.mo`.",
+    "Use English for any user-facing text.",
+    "Do not edit files under `frontend/src/components/ui` or any other frontend immutable paths listed in SYSTEM_CONTEXT.",
+    "Do not implement any IST dual-confirmation, automatic status transitions, or booking-driven status updates; only set the initial default on creation."
   ],
   "nonGoals": [
-    "Implementing automatic propertyStatus transitions based on user/owner actions.",
-    "Adding confirmation request screens, dashboards, commissions, payments, or IST signal tracking logic.",
-    "Replacing or refactoring the existing availability badge/counter system."
+    "Adding any new API for updating `propertyStatus` after creation.",
+    "Implementing logic to automatically change `propertyStatus` based on bookings, approvals, unlocks, or other events.",
+    "Changing or reinterpreting the existing `availability` model."
   ],
   "imageRequirements": {
     "required": [],

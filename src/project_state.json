@@ -1,10 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 5,
   "summary": "Upgrade platform listing model and UI to support a new dynamic PropertyStatus system (separate from existing availability), as a foundation for future IST dual-confirmation booking flow.",
   "architectural_notes": [
     "Introduce a new PropertyStatus enum (available, visitCompleted, underConfirmation, bookedViaSTYO) separate from existing Listing.availability; store as Listing.propertyStatus with default 'available' for existing and new listings.",
-    "Backend listings currently stored in an in-memory Map in backend/main.mo; propertyStatus will be persisted wherever Listing is persisted (currently within that map)."
+    "Backend listings currently stored in an in-memory Map in backend/main.mo; propertyStatus will be persisted wherever Listing is persisted (currently within that map).",
+    "Ensure `propertyStatus` is explicitly set to `#available` in the listing-creation code path (not just relied on implicitly), so all newly created listings default to `#available`. "
   ],
   "known_issues": [],
   "isFixRequest": false,
@@ -70,6 +71,14 @@
       "summary": "Backend: Ensure default value for `propertyStatus` is `#available` for (a) all newly created listings and (b) all existing listings returned by queries (including any demo listings, if present), without changing existing `availability` values.",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
+      "reqIds": [
+        "REQ-8"
       ],
       "status": "pending"
     }
