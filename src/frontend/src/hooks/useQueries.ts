@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { UserProfile, Listing, ListingCategory, EventMarker, Review, AvailabilityStatus, GeoLocation, QuickPublishResult, AvailabilityCounts, LeadView, AdminNotification, CityChargeSettings, PublicListingInput, PublicListingSubmission } from '../backend';
+import { UserProfile, Listing, ListingCategory, EventMarker, Review, AvailabilityStatus, GeoLocation, QuickPublishResult, AvailabilityCounts, LeadView, AdminNotification, CityChargeSettings, PublicListingInput, PublicListingSubmission, PropertyStatus } from '../backend';
 import { ExternalBlob } from '../backend';
 
 export function useGetCallerUserProfile() {
@@ -227,6 +227,37 @@ export function useUpdateListing() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['listings'] });
       queryClient.invalidateQueries({ queryKey: ['availabilityCounts'] });
+    },
+  });
+}
+
+export function useUpdatePropertyStatus() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ listingId, newStatus }: { listingId: bigint; newStatus: PropertyStatus }) => {
+      if (!actor) throw new Error('Actor not initialized');
+      return actor.updatePropertyStatus(listingId, newStatus);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+      queryClient.invalidateQueries({ queryKey: ['listing', variables.listingId.toString()] });
+    },
+  });
+}
+
+export function useProcessExpiredListings() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      return actor.processExpiredListings();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
   });
 }

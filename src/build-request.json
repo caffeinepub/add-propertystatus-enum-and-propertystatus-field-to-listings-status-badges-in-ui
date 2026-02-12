@@ -1,49 +1,84 @@
 {
   "kind": "build_request",
-  "title": "Backend: Default new Listing.propertyStatus to #available on creation",
-  "priority": "high",
+  "title": "Implement PropertyStatus transition state machine with 24h underConfirmation timeout",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-9",
-      "text": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
+      "id": "REQ-1",
+      "text": "Add backend-only PropertyStatus transition logic for listings with exactly these allowed transitions: #available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO. Any other transition attempt must be rejected with an English error message.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Update the Listing creation function so that:\npropertyStatus = #available\n\nwhenever a new Listing is created.\n\nDo not modify anything else."
+          "Implement only the propertyStatus transition logic.\n\nRules:\n- #available → #visitCompleted\n- #visitCompleted → #underConfirmation\n- #underConfirmation → #bookedViaSTYO"
         ]
       },
       "acceptanceCriteria": [
-        "Creating a new listing via the existing backend API results in the stored and returned `Listing` having `propertyStatus` equal to `#available`.",
-        "All backend code paths that create a new `Listing` set `propertyStatus` explicitly at creation time (no reliance on implicit defaults).",
-        "No other listing fields, query behavior, authorization behavior, or frontend behavior are changed."
+        "A shared backend method exists to request a propertyStatus transition for a specific listing id.",
+        "When current status is #available, transitioning to #visitCompleted succeeds; transitioning to any other status fails.",
+        "When current status is #visitCompleted, transitioning to #underConfirmation succeeds; transitioning to any other status fails.",
+        "When current status is #underConfirmation, transitioning to #bookedViaSTYO succeeds; transitioning to any other status fails.",
+        "When current status is #bookedViaSTYO, all further transitions are rejected.",
+        "Rejected transitions trap/return an English error message that clearly indicates the transition is invalid."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement the 24-hour timeout rule for #underConfirmation: if a listing remains in #underConfirmation for more than 24 hours without being transitioned to #bookedViaSTYO, it must automatically revert to #available.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "- If not confirmed within 24h → revert to #available"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The backend persists sufficient data to determine when a listing entered #underConfirmation (without requiring a breaking change to the Listing record schema).",
+        "If a listing is in #underConfirmation and 24 hours have elapsed since it entered that status, the backend reverts it to #available.",
+        "The auto-revert removes/clears any stored underConfirmation timestamp tracking for that listing.",
+        "The auto-revert is applied consistently so that subsequent reads (e.g., getListing/getListings) do not continue to show an expired #underConfirmation status."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Enforce authorization rules for propertyStatus transitions so only the listing owner or an admin can advance the propertyStatus for that listing (auto-revert is system-driven).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Only implement transition logic."
+        ]
+      },
+      "acceptanceCriteria": [
+        "If the caller is neither the listing owner nor an admin, the transition method rejects with an English authorization error.",
+        "If the caller is the listing owner, valid transitions succeed.",
+        "If the caller is an admin, valid transitions succeed.",
+        "Auto-revert does not require a caller action and is not blocked by authorization checks."
       ]
     }
   ],
   "constraints": [
-    "Do not modify anything other than setting `propertyStatus = #available` at new `Listing` creation time in `backend/main.mo`.",
-    "Do not change the `availability` field or its behavior.",
-    "Do not add IST dual-confirmation logic or any automatic status transitions."
+    "Do NOT add payment logic yet.",
+    "Do NOT generate dashboards.",
+    "Only implement propertyStatus transition logic and the 24-hour underConfirmation timeout revert.",
+    "Keep backend architecture as a single Motoko actor in backend/main.mo."
   ],
   "nonGoals": [
-    "Adding UI changes or any frontend updates.",
-    "Updating existing listings’ `propertyStatus` values (this request is only about newly created listings).",
-    "Adding new endpoints or changing API shapes beyond ensuring the creation logic sets `propertyStatus`."
+    "Owner/customer confirmation popups UI",
+    "IST owner/customer dashboards",
+    "Booking signal tracking fields beyond what is strictly needed to support the 24-hour underConfirmation timeout",
+    "Commission deduction",
+    "Listing reactivation logic beyond reverting expired underConfirmation back to #available",
+    "Any Stripe/payment integration changes"
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

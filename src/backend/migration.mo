@@ -1,109 +1,95 @@
 import Map "mo:core/Map";
+import Nat "mo:core/Nat";
+import Time "mo:core/Time";
+import Storage "blob-storage/Storage";
 
 module {
-  type Listing = {
+  type GeoLocation = {
+    lat : Float;
+    lon : Float;
+    address : Text;
+  };
+  type ListingCategory = {
+    #pgHostel;
+    #familyFlat;
+    #hotel;
+    #marriageHall;
+    #studentStay;
+    #travelStay;
+    #eventSpace;
+  };
+
+  type ApprovalStatus = {
+    #pending;
+    #approved;
+    #rejected;
+  };
+
+  type PropertyStatus = {
+    #available;
+    #visitCompleted;
+    #underConfirmation;
+    #bookedViaSTYO;
+  };
+
+  type AvailabilityStatus = {
+    status : {
+      #available;
+      #booked;
+      #partiallyAvailable;
+    };
+    availableUnits : Nat;
+    unitType : Text;
+    dates : ?[{
+      date : Time.Time;
+      availableUnits : Nat;
+    }];
+  };
+
+  type OldListing = {
     id : Nat;
     title : Text;
     description : Text;
-    category : {
-      #pgHostel;
-      #familyFlat;
-      #hotel;
-      #marriageHall;
-      #studentStay;
-      #travelStay;
-      #eventSpace;
-    };
+    category : ListingCategory;
     pricePerDay : Nat;
-    images : [Blob];
-    location : {
-      lat : Float;
-      lon : Float;
-      address : Text;
-    };
-    availability : {
-      status : {
-        #available;
-        #booked;
-        #partiallyAvailable;
-      };
-      availableUnits : Nat;
-      unitType : Text;
-      dates : ?[{
-        date : Int;
-        availableUnits : Nat;
-      }];
-    };
+    images : [Storage.ExternalBlob];
+    location : GeoLocation;
+    availability : AvailabilityStatus;
+    propertyStatus : PropertyStatus;
     owner : Principal;
     contactInfo : Text;
     verified : Bool;
     featured : Bool;
-    createdAt : Int;
-    lastUpdated : Int;
-    approvalStatus : {
-      #pending;
-      #approved;
-      #rejected;
-    };
+    createdAt : Time.Time;
+    lastUpdated : Time.Time;
+    approvalStatus : ApprovalStatus;
   };
 
   type OldActor = {
-    listings : Map.Map<Nat, Listing>;
-    demoListings : Map.Map<Nat, Listing>;
-    listingCache : Map.Map<Nat, Listing>;
-    caches : Map.Map<Nat, Map.Map<Nat, Listing>>;
+    listings : Map.Map<Nat, OldListing>;
+    demoListings : Map.Map<Nat, OldListing>;
+    listingCache : Map.Map<Nat, OldListing>;
+    caches : Map.Map<Nat, Map.Map<Nat, OldListing>>;
   };
 
   type NewListing = {
     id : Nat;
     title : Text;
     description : Text;
-    category : {
-      #pgHostel;
-      #familyFlat;
-      #hotel;
-      #marriageHall;
-      #studentStay;
-      #travelStay;
-      #eventSpace;
-    };
+    category : ListingCategory;
     pricePerDay : Nat;
-    images : [Blob];
-    location : {
-      lat : Float;
-      lon : Float;
-      address : Text;
-    };
-    availability : {
-      status : {
-        #available;
-        #booked;
-        #partiallyAvailable;
-      };
-      availableUnits : Nat;
-      unitType : Text;
-      dates : ?[{
-        date : Int;
-        availableUnits : Nat;
-      }];
-    };
-    propertyStatus : {
-      #available;
-      #visitCompleted;
-      #underConfirmation;
-      #bookedViaSTYO;
-    };
+    images : [Storage.ExternalBlob];
+    location : GeoLocation;
+    availability : AvailabilityStatus;
+    propertyStatus : PropertyStatus;
+    statusTimestamp : Time.Time;
     owner : Principal;
     contactInfo : Text;
     verified : Bool;
     featured : Bool;
-    createdAt : Int;
-    lastUpdated : Int;
-    approvalStatus : {
-      #pending;
-      #approved;
-      #rejected;
-    };
+    createdAt : Time.Time;
+    lastUpdated : Time.Time;
+    approvalStatus : ApprovalStatus;
   };
 
   type NewActor = {
@@ -113,31 +99,29 @@ module {
     caches : Map.Map<Nat, Map.Map<Nat, NewListing>>;
   };
 
+  func migrateListing(oldListing : OldListing, timestamp : Time.Time) : NewListing {
+    { oldListing with statusTimestamp = timestamp };
+  };
+
+  func migrateNestedListingMap(oldMap : Map.Map<Nat, OldListing>, timestamp : Time.Time) : Map.Map<Nat, NewListing> {
+    oldMap.map<Nat, OldListing, NewListing>(
+      func(_, oldListing) { migrateListing(oldListing, timestamp) }
+    );
+  };
+
+  func migrateCaches(oldCaches : Map.Map<Nat, Map.Map<Nat, OldListing>>, timestamp : Time.Time) : Map.Map<Nat, Map.Map<Nat, NewListing>> {
+    oldCaches.map<Nat, Map.Map<Nat, OldListing>, Map.Map<Nat, NewListing>>(
+      func(_, oldMap) { migrateNestedListingMap(oldMap, timestamp) }
+    );
+  };
+
   public func run(old : OldActor) : NewActor {
-    let newListings = old.listings.map<Nat, Listing, NewListing>(
-      func(_id, listing) { { listing with propertyStatus = #available } }
-    );
-
-    let newDemoListings = old.demoListings.map<Nat, Listing, NewListing>(
-      func(_id, listing) { { listing with propertyStatus = #available } }
-    );
-
-    let newListingCache = old.listingCache.map<Nat, Listing, NewListing>(
-      func(_id, listing) { { listing with propertyStatus = #available } }
-    );
-
-    let newCaches = old.caches.map<Nat, Map.Map<Nat, Listing>, Map.Map<Nat, NewListing>>(
-      func(_id, innerMap) {
-        innerMap.map<Nat, Listing, NewListing>(func(_id, listing) { { listing with propertyStatus = #available } });
-      }
-    );
-
+    let timestamp = Time.now();
     {
-      old with
-      listings = newListings;
-      demoListings = newDemoListings;
-      listingCache = newListingCache;
-      caches = newCaches;
+      listings = migrateNestedListingMap(old.listings, timestamp);
+      demoListings = migrateNestedListingMap(old.demoListings, timestamp);
+      listingCache = migrateNestedListingMap(old.listingCache, timestamp);
+      caches = migrateCaches(old.caches, timestamp);
     };
   };
 };

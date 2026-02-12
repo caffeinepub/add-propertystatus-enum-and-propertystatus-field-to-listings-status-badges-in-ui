@@ -111,6 +111,7 @@ export const Listing = IDL.Record({
   'category' : ListingCategory,
   'propertyStatus' : PropertyStatus,
   'location' : GeoLocation,
+  'statusTimestamp' : Time,
   'images' : IDL.Vec(ExternalBlob),
 });
 export const UserProfile = IDL.Record({
@@ -225,7 +226,6 @@ export const idlService = IDL.Service({
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [IDL.Nat], []),
-  'adminInitialize' : IDL.Func([], [], []),
   'approveListing' : IDL.Func([IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'bulkUpdateCityCharges' : IDL.Func(
@@ -318,8 +318,6 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getVerifiedListings' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
-  'initialize' : IDL.Func([], [], []),
-  'initializeDemoData' : IDL.Func([], [], []),
   'initializeStripePrices' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isFreeTrialMode' : IDL.Func([], [IDL.Bool], ['query']),
@@ -330,6 +328,7 @@ export const idlService = IDL.Service({
       [PaymentSuccessResponse],
       [],
     ),
+  'processExpiredListings' : IDL.Func([], [IDL.Nat], []),
   'quickPublishMode' : IDL.Func([], [QuickPublishResult], []),
   'rejectListing' : IDL.Func([IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
@@ -339,6 +338,7 @@ export const idlService = IDL.Service({
   'updateCityChargeSettings' : IDL.Func([IDL.Text, CityChargeSettings], [], []),
   'updateListing' : IDL.Func([IDL.Nat, Listing], [], []),
   'updateOwnerProfile' : IDL.Func([OwnerProfile], [], []),
+  'updatePropertyStatus' : IDL.Func([IDL.Nat, PropertyStatus], [], []),
   'verifyListing' : IDL.Func([IDL.Nat, IDL.Bool], [], []),
 });
 
@@ -448,6 +448,7 @@ export const idlFactory = ({ IDL }) => {
     'category' : ListingCategory,
     'propertyStatus' : PropertyStatus,
     'location' : GeoLocation,
+    'statusTimestamp' : Time,
     'images' : IDL.Vec(ExternalBlob),
   });
   const UserProfile = IDL.Record({
@@ -562,7 +563,6 @@ export const idlFactory = ({ IDL }) => {
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addReview' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [IDL.Nat], []),
-    'adminInitialize' : IDL.Func([], [], []),
     'approveListing' : IDL.Func([IDL.Nat], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'bulkUpdateCityCharges' : IDL.Func(
@@ -655,8 +655,6 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getVerifiedListings' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
-    'initialize' : IDL.Func([], [], []),
-    'initializeDemoData' : IDL.Func([], [], []),
     'initializeStripePrices' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isFreeTrialMode' : IDL.Func([], [IDL.Bool], ['query']),
@@ -667,6 +665,7 @@ export const idlFactory = ({ IDL }) => {
         [PaymentSuccessResponse],
         [],
       ),
+    'processExpiredListings' : IDL.Func([], [IDL.Nat], []),
     'quickPublishMode' : IDL.Func([], [QuickPublishResult], []),
     'rejectListing' : IDL.Func([IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
@@ -680,6 +679,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateListing' : IDL.Func([IDL.Nat, Listing], [], []),
     'updateOwnerProfile' : IDL.Func([OwnerProfile], [], []),
+    'updatePropertyStatus' : IDL.Func([IDL.Nat, PropertyStatus], [], []),
     'verifyListing' : IDL.Func([IDL.Nat, IDL.Bool], [], []),
   });
 };

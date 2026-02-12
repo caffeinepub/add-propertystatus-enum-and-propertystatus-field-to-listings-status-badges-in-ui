@@ -119,6 +119,7 @@ export interface Listing {
     category: ListingCategory;
     propertyStatus: PropertyStatus;
     location: GeoLocation;
+    statusTimestamp: Time;
     images: Array<ExternalBlob>;
 }
 export interface CreatePaymentResponse {
@@ -289,7 +290,6 @@ export interface backendInterface {
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addReview(listingId: bigint, rating: bigint, comment: string): Promise<bigint>;
-    adminInitialize(): Promise<void>;
     approveListing(_listingId: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bulkUpdateCityCharges(updates: Array<[string, CityChargeSettings]>): Promise<void>;
@@ -327,14 +327,13 @@ export interface backendInterface {
     getReviewsForListing(listingId: bigint): Promise<Array<Review>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getVerifiedListings(): Promise<Array<Listing>>;
-    initialize(): Promise<void>;
-    initializeDemoData(): Promise<void>;
     initializeStripePrices(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
     isFreeTrialMode(): Promise<boolean>;
     markNotificationAsRead(notificationId: bigint): Promise<void>;
     paymentCancel(sessionId: string): Promise<PaymentCancelResponse>;
     paymentSuccess(sessionId: string, accountId: string, caffeineCustomerId: string): Promise<PaymentSuccessResponse>;
+    processExpiredListings(): Promise<bigint>;
     quickPublishMode(): Promise<QuickPublishResult>;
     rejectListing(_listingId: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
@@ -344,6 +343,7 @@ export interface backendInterface {
     updateCityChargeSettings(city: string, settings: CityChargeSettings): Promise<void>;
     updateListing(_id: bigint, _listing: Listing): Promise<void>;
     updateOwnerProfile(_profile: OwnerProfile): Promise<void>;
+    updatePropertyStatus(_listingId: bigint, newStatus: PropertyStatus): Promise<void>;
     verifyListing(_listingId: bigint, _verified: boolean): Promise<void>;
 }
 import type { AdminNotification as _AdminNotification, ApprovalStatus as _ApprovalStatus, AvailabilityStatus as _AvailabilityStatus, CityChargeSettings as _CityChargeSettings, ExternalBlob as _ExternalBlob, GeoLocation as _GeoLocation, LeadView as _LeadView, Listing as _Listing, ListingCategory as _ListingCategory, PropertyStatus as _PropertyStatus, PublicListingInput as _PublicListingInput, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
@@ -458,20 +458,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.addReview(arg0, arg1, arg2);
-            return result;
-        }
-    }
-    async adminInitialize(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.adminInitialize();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.adminInitialize();
             return result;
         }
     }
@@ -915,34 +901,6 @@ export class Backend implements backendInterface {
             return from_candid_vec_n26(this._uploadFile, this._downloadFile, result);
         }
     }
-    async initialize(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.initialize();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.initialize();
-            return result;
-        }
-    }
-    async initializeDemoData(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.initializeDemoData();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.initializeDemoData();
-            return result;
-        }
-    }
     async initializeStripePrices(): Promise<void> {
         if (this.processError) {
             try {
@@ -1024,6 +982,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.paymentSuccess(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async processExpiredListings(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.processExpiredListings();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.processExpiredListings();
             return result;
         }
     }
@@ -1150,6 +1122,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateOwnerProfile(arg0);
+            return result;
+        }
+    }
+    async updatePropertyStatus(arg0: bigint, arg1: PropertyStatus): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updatePropertyStatus(arg0, to_candid_PropertyStatus_n58(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updatePropertyStatus(arg0, to_candid_PropertyStatus_n58(this._uploadFile, this._downloadFile, arg1));
             return result;
         }
     }
@@ -1337,6 +1323,7 @@ async function from_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promi
     category: _ListingCategory;
     propertyStatus: _PropertyStatus;
     location: _GeoLocation;
+    statusTimestamp: _Time;
     images: Array<_ExternalBlob>;
 }): Promise<{
     id: bigint;
@@ -1354,6 +1341,7 @@ async function from_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promi
     category: ListingCategory;
     propertyStatus: PropertyStatus;
     location: GeoLocation;
+    statusTimestamp: Time;
     images: Array<ExternalBlob>;
 }> {
     return {
@@ -1372,6 +1360,7 @@ async function from_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promi
         category: from_candid_ListingCategory_n21(_uploadFile, _downloadFile, value.category),
         propertyStatus: from_candid_PropertyStatus_n35(_uploadFile, _downloadFile, value.propertyStatus),
         location: value.location,
+        statusTimestamp: value.statusTimestamp,
         images: await from_candid_vec_n37(_uploadFile, _downloadFile, value.images)
     };
 }
@@ -1677,6 +1666,7 @@ async function to_candid_record_n55(_uploadFile: (file: ExternalBlob) => Promise
     category: ListingCategory;
     propertyStatus: PropertyStatus;
     location: GeoLocation;
+    statusTimestamp: Time;
     images: Array<ExternalBlob>;
 }): Promise<{
     id: bigint;
@@ -1694,6 +1684,7 @@ async function to_candid_record_n55(_uploadFile: (file: ExternalBlob) => Promise
     category: _ListingCategory;
     propertyStatus: _PropertyStatus;
     location: _GeoLocation;
+    statusTimestamp: _Time;
     images: Array<_ExternalBlob>;
 }> {
     return {
@@ -1712,6 +1703,7 @@ async function to_candid_record_n55(_uploadFile: (file: ExternalBlob) => Promise
         category: to_candid_ListingCategory_n10(_uploadFile, _downloadFile, value.category),
         propertyStatus: to_candid_PropertyStatus_n58(_uploadFile, _downloadFile, value.propertyStatus),
         location: value.location,
+        statusTimestamp: value.statusTimestamp,
         images: await to_candid_vec_n12(_uploadFile, _downloadFile, value.images)
     };
 }

@@ -1,37 +1,74 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T02:39:27.996Z",
-  "summary": "The diff does not provide evidence that new Listing creation paths in `backend/main.mo` now explicitly set `propertyStatus = #available`. Additionally, `project_state.json` was modified, which violates the constraint to only change Listing creation-time defaulting in `backend/main.mo`.",
+  "generatedAt": "2026-02-12T08:03:10.512Z",
+  "summary": "Diff introduces a schema change adding `statusTimestamp` to `Listing` plus a migration module, and adds/updates multiple frontend hooks/pages. However, the diff summary does not provide evidence that the required backend-only PropertyStatus transition state machine, authorization enforcement, or 24-hour underConfirmation auto-revert logic is actually implemented in `backend/main.mo`.",
   "missing_requirements": [
     {
-      "id": "REQ-9",
-      "requirement": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available` across every code path that constructs/stores a new `Listing`.",
-      "reason": "The provided truncated `backend/main.mo` excerpt only shows type/record definitions (including `PropertyStatus` and `Listing.propertyStatus`) and does not show any listing-construction code paths being updated to explicitly assign `propertyStatus = #available` at creation time. With the diff truncated, there is insufficient evidence that the creation logic was updated as required.",
+      "id": "REQ-1",
+      "requirement": "Add backend-only PropertyStatus transition logic with exactly these allowed transitions (#available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO) and reject all other transitions with an English error message via a shared backend method taking a listing id.",
+      "reason": "The `PropertyStatus` variants are present, but the diff summary does not show any new shared backend method for requesting transitions, nor any logic enforcing the exact allowed transitions or producing English invalid-transition errors.",
       "evidence": [
-        "backend/main.mo (truncated; shows type definitions but no listing creation logic)"
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Implement 24-hour timeout for #underConfirmation: persist non-breaking timestamp tracking, auto-revert expired listings to #available, clear stored timestamp tracking, and ensure reads no longer show expired #underConfirmation.",
+      "reason": "A new `statusTimestamp` field is added and a migration populates it, but there is no evidence of the 24-hour expiration check, automatic revert to `#available`, clearing of the timestamp tracking for expired entries, or applying the rule during reads (e.g., `getListing/getListings`). Also, adding `statusTimestamp` to the `Listing` record suggests a potentially breaking schema change, contrary to the acceptance criterion, and no alternative non-breaking tracking mechanism is shown.",
+      "evidence": [
+        "backend/main.mo (truncated)",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Enforce authorization so only listing owner or admin can advance propertyStatus (auto-revert is system-driven and not blocked by auth).",
+      "reason": "The diff summary shows inclusion of authorization mixins but does not show any new authorization checks tied specifically to a propertyStatus transition method, nor logic to allow system-driven auto-revert without caller authorization.",
+      "evidence": [
+        "backend/main.mo (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Modified `project_state.json` content unrelated to setting `propertyStatus = #available` at Listing creation time in `backend/main.mo`.",
-      "reason": "BuildRequest constraint explicitly says: \"Do not modify anything other than setting `propertyStatus = #available` at new `Listing` creation time in `backend/main.mo`.\" Any change to `project_state.json` is out of scope.",
+      "description": "Introduced a separate backend migration module/file and wired it into the actor.",
+      "reason": "BuildRequest constraint says to keep backend architecture as a single Motoko actor in `backend/main.mo`; adding `backend/migration.mo` introduces extra backend architecture beyond the single-actor file constraint.",
       "evidence": [
-        "project_state.json (modified)"
+        "backend/migration.mo",
+        "backend/main.mo (truncated) (with migration = Migration.run)"
       ]
     },
     {
-      "description": "Potential broader backend model/type changes shown in `backend/main.mo` (e.g., presence of `PropertyStatus` type and `Listing.propertyStatus` field) beyond the narrowly-scoped creation-time defaulting change.",
-      "reason": "The request scope is limited to setting `propertyStatus = #available` at creation time and forbids other modifications. The truncated diff excerpt for `backend/main.mo` prominently includes `PropertyStatus` and `propertyStatus` in the `Listing` record, which may indicate additional changes beyond creation-time assignment; however, due to truncation, it cannot be confirmed what exactly changed.",
+      "description": "Added frontend functionality for updating property status and processing expired listings via new React Query hooks.",
+      "reason": "BuildRequest scope is backend-only propertyStatus transition logic and 24h timeout revert; frontend UI/hooks (e.g., `useUpdatePropertyStatus`, `useProcessExpiredListings`) are outside scope and non-goals include UI work for confirmations/dashboards.",
       "evidence": [
-        "backend/main.mo (truncated; includes `public type PropertyStatus` and `Listing` includes `propertyStatus : PropertyStatus`)"
+        "frontend/src/hooks/useQueries.ts (truncated)",
+        "frontend-file-summaries.txt (mentions new useUpdatePropertyStatus and useProcessExpiredListings)"
+      ]
+    },
+    {
+      "description": "Expanded/modified Property Management UI page to use property status update hooks and related UI behavior.",
+      "reason": "UI changes are not requested; requirements focus on backend transition logic and timeout behavior only.",
+      "evidence": [
+        "frontend/src/pages/PropertyManagementPage.tsx (truncated)"
+      ]
+    },
+    {
+      "description": "Added frontend IP/location capture behavior during user profile save.",
+      "reason": "Not requested by the BuildRequest; unrelated to propertyStatus transition state machine and 24h timeout.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts (truncated) (\"Capture IP and location data\")"
       ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.74,
   "changed_files": [
     "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/PropertyManagementPage.tsx",
     "project_state.json"
   ]
 }

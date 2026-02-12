@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend: No changes required for default Listing.propertyStatus on creation",
+  "title": "PropertyStatus transition state machine + 24h underConfirmation timeout (frontend-only scope)",
   "requirements": []
 }

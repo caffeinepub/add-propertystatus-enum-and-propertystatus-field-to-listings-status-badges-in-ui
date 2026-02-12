@@ -89,6 +89,7 @@ export interface Listing {
   'category' : ListingCategory,
   'propertyStatus' : PropertyStatus,
   'location' : GeoLocation,
+  'statusTimestamp' : Time,
   'images' : Array<ExternalBlob>,
 }
 export type ListingCategory = { 'marriageHall' : null } |
@@ -203,7 +204,6 @@ export interface _SERVICE {
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addReview' : ActorMethod<[bigint, bigint, string], bigint>,
-  'adminInitialize' : ActorMethod<[], undefined>,
   'approveListing' : ActorMethod<[bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'bulkUpdateCityCharges' : ActorMethod<
@@ -268,8 +268,6 @@ export interface _SERVICE {
   'getReviewsForListing' : ActorMethod<[bigint], Array<Review>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getVerifiedListings' : ActorMethod<[], Array<Listing>>,
-  'initialize' : ActorMethod<[], undefined>,
-  'initializeDemoData' : ActorMethod<[], undefined>,
   'initializeStripePrices' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isFreeTrialMode' : ActorMethod<[], boolean>,
@@ -279,6 +277,7 @@ export interface _SERVICE {
     [string, string, string],
     PaymentSuccessResponse
   >,
+  'processExpiredListings' : ActorMethod<[], bigint>,
   'quickPublishMode' : ActorMethod<[], QuickPublishResult>,
   'rejectListing' : ActorMethod<[bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
@@ -291,6 +290,7 @@ export interface _SERVICE {
   >,
   'updateListing' : ActorMethod<[bigint, Listing], undefined>,
   'updateOwnerProfile' : ActorMethod<[OwnerProfile], undefined>,
+  'updatePropertyStatus' : ActorMethod<[bigint, PropertyStatus], undefined>,
   'verifyListing' : ActorMethod<[bigint, boolean], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

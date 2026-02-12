@@ -1,58 +1,24 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Upgrade platform listing model and UI to support a new dynamic PropertyStatus system (separate from existing availability), as a foundation for future IST dual-confirmation booking flow.",
+  "projectStateVersion": 3,
+  "summary": "Implement IST dual-confirmation booking model incrementally; current step is to add only backend propertyStatus transition logic with a 24h underConfirmation timeout/revert, explicitly excluding payments and dashboards for now.",
   "architectural_notes": [
-    "Introduce a new PropertyStatus enum (available, visitCompleted, underConfirmation, bookedViaSTYO) separate from existing Listing.availability; store as Listing.propertyStatus with default 'available' for existing and new listings.",
-    "Backend listings currently stored in an in-memory Map in backend/main.mo; propertyStatus will be persisted wherever Listing is persisted (currently within that map).",
-    "Ensure `propertyStatus` is explicitly set to `#available` in the listing-creation code path (not just relied on implicitly), so all newly created listings default to `#available`. "
+    "Implement IST workflow step-by-step; current scope limited to propertyStatus transitions only (no payment logic, no dashboards).",
+    "Add time-based rule: underConfirmation expires after 24h and reverts listing to available if not confirmed."
   ],
   "known_issues": [],
-  "isFixRequest": true,
-  "existing_features": [
-    {
-      "id": "feature-frontend-update-generated-consumed-backend-types-so-the-frontend-listing-type-includes-propertystatus-and-the-frontend-can-render-it-without-typescript-errors",
-      "title": "Frontend: Update generated/consumed backend types so the frontend `Listing` type includes `propertyStatus` and the frontend can render it without TypeScript errors.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-frontend-add-a-dynamic-propertystatus-badge-to-the-property-card-component-frontend-src-components-listingcard-tsx-that-reflects-the-listing-s-propertystatus-value-with-clear-english-labels-available-visit-completed-under-confirmation-booked-via-styo",
-      "title": "Frontend: Add a dynamic `propertyStatus` badge to the property card component (`frontend/src/components/ListingCard.tsx`) that reflects the listing’s `propertyStatus` value with clear English labels: \"Available\", \"Visit Completed\", \"Under Confirmation\", \"Booked via STYO\".",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-frontend-add-a-dynamic-propertystatus-badge-to-the-property-detail-page-current-route-unlock-listingid-frontend-src-pages-unlockpage-tsx-that-reflects-the-listing-s-propertystatus-value-using-the-same-4-english-labels",
-      "title": "Frontend: Add a dynamic `propertyStatus` badge to the property detail page (current route `/unlock/$listingId`, `frontend/src/pages/UnlockPage.tsx`) that reflects the listing’s `propertyStatus` value using the same 4 English labels.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-scope-guard-do-not-implement-any-ist-dual-confirmation-or-automatic-status-update-logic-yet-only-add-the-4-status-model-and-ui-display",
-      "title": "Scope guard: Do not implement any IST dual-confirmation or automatic status-update logic yet; only add the 4-status model and UI display.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    }
-  ],
+  "isFixRequest": false,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add PropertyStatus enum and propertyStatus field to backend Listing model (default available) and display dynamic status badges on property card and property detail page; keep existing availability unchanged; no confirmation logic yet.",
+      "summary": "Implement propertyStatus transition logic: available→visitCompleted→underConfirmation→bookedViaSTYO, with automatic revert to available if not confirmed within 24h",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Backend: Add a new enum type `PropertyStatus` with exactly these variants: `#available`, `#visitCompleted`, `#underConfirmation`, `#bookedViaSTYO`.",
+      "summary": "Add backend-only PropertyStatus transition logic for listings with exactly these allowed transitions: #available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO. Any other transition attempt must be rejected with an English error message.",
       "reqIds": [
         "REQ-1"
       ],
@@ -60,7 +26,7 @@
     },
     {
       "id": "AR-3",
-      "summary": "Backend: Extend the `Listing` record to include a new field `propertyStatus : PropertyStatus` while keeping the existing `availability` field unchanged.",
+      "summary": "Implement the 24-hour timeout rule for #underConfirmation: if a listing remains in #underConfirmation for more than 24 hours without being transitioned to #bookedViaSTYO, it must automatically revert to #available.",
       "reqIds": [
         "REQ-2"
       ],
@@ -68,30 +34,14 @@
     },
     {
       "id": "AR-4",
-      "summary": "Backend: Ensure default value for `propertyStatus` is `#available` for (a) all newly created listings and (b) all existing listings returned by queries (including any demo listings, if present), without changing existing `availability` values.",
+      "summary": "Enforce authorization rules for propertyStatus transitions so only the listing owner or an admin can advance the propertyStatus for that listing (auto-revert is system-driven).",
       "reqIds": [
         "REQ-3"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Ensure that every code path that creates a new `Listing` record in `backend/main.mo` explicitly sets `propertyStatus` to `#available` at creation time (so newly created listings never have an unset or non-available initial `propertyStatus`).",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "status": "pending"
     }
   ],
-  "projectName": "Add PropertyStatus enum and propertyStatus field to listings + status badges in UI",
+  "projectName": "Implement PropertyStatus transition state machine with 24h underConfirmation timeout",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

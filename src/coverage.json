@@ -1,18 +1,32 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T02:39:27.999Z",
+  "generatedAt": "2026-02-12T08:03:10.515Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
+    "total": 3,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-9",
-        "summary": "Update the backend listing creation logic in `backend/main.mo` so that whenever a new `Listing` record is created, it explicitly sets `propertyStatus = #available`. Ensure this is applied to every code path that constructs and stores a new `Listing` (including user/owner-created listings, public submissions that become listings, and any demo/seed listing creation if present).",
+        "id": "REQ-1",
+        "summary": "Add backend-only PropertyStatus transition logic for listings with exactly these allowed transitions: #available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO. Any other transition attempt must be rejected with an English error message.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Implement the 24-hour timeout rule for #underConfirmation: if a listing remains in #underConfirmation for more than 24 hours without being transitioned to #bookedViaSTYO, it must automatically revert to #available.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Enforce authorization rules for propertyStatus transitions so only the listing owner or an admin can advance the propertyStatus for that listing (auto-revert is system-driven).",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -21,13 +35,17 @@
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/PropertyManagementPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

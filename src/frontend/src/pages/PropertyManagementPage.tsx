@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetListings, useCreateListing, useUpdateListing } from '../hooks/useQueries';
+import { useGetListings, useCreateListing, useUpdateListing, useUpdatePropertyStatus } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ListingCategory, Variant_partiallyAvailable_booked_available } from '../backend';
-import { Plus, Edit, Building2 } from 'lucide-react';
+import { ListingCategory, Variant_partiallyAvailable_booked_available, PropertyStatus } from '../backend';
+import { Plus, Edit, Building2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import PropertyStatusBadge from '../components/PropertyStatusBadge';
 
 export default function PropertyManagementPage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function PropertyManagementPage() {
   const { data: allListings, isLoading } = useGetListings();
   const createListing = useCreateListing();
   const updateListing = useUpdateListing();
+  const updatePropertyStatus = useUpdatePropertyStatus();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -153,6 +155,63 @@ export default function PropertyManagementPage() {
       status: listing.availability.status,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handlePropertyStatusTransition = async (listingId: bigint, currentStatus: PropertyStatus) => {
+    let nextStatus: PropertyStatus | null = null;
+
+    switch (currentStatus) {
+      case PropertyStatus.available:
+        nextStatus = PropertyStatus.visitCompleted;
+        break;
+      case PropertyStatus.visitCompleted:
+        nextStatus = PropertyStatus.underConfirmation;
+        break;
+      case PropertyStatus.underConfirmation:
+        nextStatus = PropertyStatus.bookedViaSTYO;
+        break;
+      default:
+        toast.error('No valid transition available');
+        return;
+    }
+
+    try {
+      await updatePropertyStatus.mutateAsync({ listingId, newStatus: nextStatus });
+      toast.success(`Property status updated to ${getStatusLabel(nextStatus)}`);
+    } catch (error: any) {
+      console.error('Failed to update property status:', error);
+      toast.error('Failed to update status', {
+        description: error.message || 'Please try again',
+      });
+    }
+  };
+
+  const getStatusLabel = (status: PropertyStatus): string => {
+    switch (status) {
+      case PropertyStatus.available:
+        return 'Available';
+      case PropertyStatus.visitCompleted:
+        return 'Visit Completed';
+      case PropertyStatus.underConfirmation:
+        return 'Under Confirmation';
+      case PropertyStatus.bookedViaSTYO:
+        return 'Booked via STYO';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const getNextStatusLabel = (currentStatus: PropertyStatus): string | null => {
+    switch (currentStatus) {
+      case PropertyStatus.available:
+        return 'Mark Visit Completed';
+      case PropertyStatus.visitCompleted:
+        return 'Move to Under Confirmation';
+      case PropertyStatus.underConfirmation:
+        return 'Mark as Booked via STYO';
+      default:
+        return null;
+    }
   };
 
   if (!identity) {
@@ -399,7 +458,7 @@ export default function PropertyManagementPage() {
                       <span className="text-white text-sm">{listing.location.address}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-white/70">Status:</span>
+                      <span className="text-white/70">Availability:</span>
                       <Badge
                         className={
                           listing.availability.status === 'available'
@@ -416,10 +475,31 @@ export default function PropertyManagementPage() {
                           : 'Booked'}
                       </Badge>
                     </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/70">Property Status:</span>
+                      <PropertyStatusBadge status={listing.propertyStatus} />
+                    </div>
                     <div className="flex gap-2 pt-2">
                       {listing.verified && <Badge className="bg-green-600">Verified</Badge>}
                       {listing.featured && <Badge className="bg-yellow-600">Featured</Badge>}
                     </div>
+                    {getNextStatusLabel(listing.propertyStatus) && (
+                      <Button
+                        onClick={() => handlePropertyStatusTransition(listing.id, listing.propertyStatus)}
+                        disabled={updatePropertyStatus.isPending}
+                        className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        size="sm"
+                      >
+                        {updatePropertyStatus.isPending ? (
+                          'Updating...'
+                        ) : (
+                          <>
+                            {getNextStatusLabel(listing.propertyStatus)}
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -427,6 +507,7 @@ export default function PropertyManagementPage() {
           </div>
         )}
 
+        {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="bg-slate-900 border-white/20 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -492,6 +573,30 @@ export default function PropertyManagementPage() {
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   className="bg-white/10 border-white/20 text-white"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-lat">Latitude</Label>
+                  <Input
+                    id="edit-lat"
+                    type="number"
+                    step="0.0001"
+                    value={formData.lat}
+                    onChange={(e) => handleInputChange('lat', e.target.value)}
+                    className="bg-white/10 border-white/20 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-lon">Longitude</Label>
+                  <Input
+                    id="edit-lon"
+                    type="number"
+                    step="0.0001"
+                    value={formData.lon}
+                    onChange={(e) => handleInputChange('lon', e.target.value)}
+                    className="bg-white/10 border-white/20 text-white"
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

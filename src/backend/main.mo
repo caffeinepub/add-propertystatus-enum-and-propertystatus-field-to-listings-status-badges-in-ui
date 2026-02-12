@@ -15,7 +15,9 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import Stripe "stripe/Stripe";
 import StripeMixin "stripe/StripeMixin";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -110,6 +112,7 @@ actor {
     location : GeoLocation;
     availability : AvailabilityStatus;
     propertyStatus : PropertyStatus;
+    statusTimestamp : Time.Time;
     owner : Principal;
     contactInfo : Text;
     verified : Bool;
@@ -307,6 +310,27 @@ actor {
   // Rate limiting constants
   let RATE_LIMIT_WINDOW_NS : Nat = 3600_000_000_000; // 1 hour in nanoseconds
   let MAX_SUBMISSIONS_PER_WINDOW : Nat = 3; // Max 3 submissions per hour per principal
+
+  let UNDER_CONFIRMATION_TIMEOUT : Int = 24 * 60 * 60 * 1_000_000_000; // 24 hours in nanoseconds
+
+  // Helper function to process expired underConfirmation listings
+  func processExpiredConfirmations() {
+    let now = Time.now();
+    for ((id, listing) in listings.toArray().values()) {
+      if (listing.propertyStatus == #underConfirmation) {
+        let timeDiff = now - listing.statusTimestamp;
+        if (timeDiff > UNDER_CONFIRMATION_TIMEOUT) {
+          let revertedListing : Listing = {
+            listing with
+            propertyStatus = #available;
+            lastUpdated = now;
+            statusTimestamp = now;
+          };
+          listings.add(id, revertedListing);
+        };
+      };
+    };
+  };
 
   public query ({ caller }) func isFreeTrialMode() : async Bool {
     freeTrialMode;
@@ -773,6 +797,7 @@ actor {
       location = _location;
       availability = _availability;
       propertyStatus = #available;
+      statusTimestamp = Time.now();
       owner = caller;
       contactInfo = _contactInfo;
       verified = false;
@@ -786,17 +811,26 @@ actor {
     listingId;
   };
 
+  func validateListingOwner(_listingId : Nat, caller : Principal) : ?Listing {
+    switch (listings.get(_listingId)) {
+      case (?listing) {
+        if (listing.owner == caller or AccessControl.isAdmin(accessControlState, caller)) {
+          ?listing;
+        } else {
+          Runtime.trap("Unauthorized: Only the listing owner or an admin can perform this action");
+        };
+      };
+      case (null) { null };
+    };
+  };
+
   public shared ({ caller }) func updateListing(_id : Nat, _listing : Listing) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can update listings");
     };
 
-    switch (listings.get(_id)) {
+    switch (validateListingOwner(_id, caller)) {
       case (?existingListing) {
-        if (existingListing.owner != caller and not AccessControl.isAdmin(accessControlState, caller)) {
-          Runtime.trap("Unauthorized: Can only update your own listings");
-        };
-
         let wasApproved = existingListing.approvalStatus == #approved and existingListing.verified;
 
         let updatedListing : Listing = {
@@ -816,6 +850,7 @@ actor {
           createdAt = existingListing.createdAt;
           lastUpdated = Time.now();
           approvalStatus = existingListing.approvalStatus;
+          statusTimestamp = existingListing.statusTimestamp;
         };
 
         listings.add(_id, updatedListing);
@@ -838,12 +873,8 @@ actor {
       Runtime.trap("Unauthorized: Only authenticated users can update availability");
     };
 
-    switch (listings.get(_listingId)) {
+    switch (validateListingOwner(_listingId, caller)) {
       case (?existingListing) {
-        if (existingListing.owner != caller and not AccessControl.isAdmin(accessControlState, caller)) {
-          Runtime.trap("Unauthorized: Can only update availability for your own listings");
-        };
-
         let wasApproved = existingListing.approvalStatus == #approved and existingListing.verified;
 
         let updatedListing : Listing = {
@@ -863,6 +894,7 @@ actor {
           createdAt = existingListing.createdAt;
           lastUpdated = Time.now();
           approvalStatus = existingListing.approvalStatus;
+          statusTimestamp = existingListing.statusTimestamp;
         };
 
         listings.add(_listingId, updatedListing);
@@ -878,6 +910,84 @@ actor {
         Runtime.trap("Listing not found");
       };
     };
+  };
+
+  public shared ({ caller }) func updatePropertyStatus(_listingId : Nat, newStatus : PropertyStatus) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can update property status");
+    };
+
+    // Process any expired confirmations before updating
+    processExpiredConfirmations();
+
+    switch (validateListingOwner(_listingId, caller)) {
+      case (?existingListing) {
+        let currentStatus = existingListing.propertyStatus;
+        let now = Time.now();
+
+        // Validate transition rules
+        let validTransition = switch (currentStatus, newStatus) {
+          case (#available, #visitCompleted) { true };
+          case (#visitCompleted, #underConfirmation) { true };
+          case (#underConfirmation, #bookedViaSTYO) { true };
+          case (_) { false };
+        };
+
+        if (not validTransition) {
+          let errorMsg = switch (currentStatus, newStatus) {
+            case (#available, #underConfirmation) {
+              "Invalid transition: Cannot move from 'available' to 'underConfirmation'. Must first transition to 'visitCompleted'."
+            };
+            case (#available, #bookedViaSTYO) {
+              "Invalid transition: Cannot move from 'available' to 'bookedViaSTYO'. Must follow the sequence: available → visitCompleted → underConfirmation → bookedViaSTYO."
+            };
+            case (#visitCompleted, #bookedViaSTYO) {
+              "Invalid transition: Cannot move from 'visitCompleted' to 'bookedViaSTYO'. Must first transition to 'underConfirmation'."
+            };
+            case (#visitCompleted, #available) {
+              "Invalid transition: Cannot move from 'visitCompleted' back to 'available'."
+            };
+            case (#underConfirmation, #available) {
+              "Invalid transition: Cannot manually revert from 'underConfirmation' to 'available'. This happens automatically after 24 hours."
+            };
+            case (#underConfirmation, #visitCompleted) {
+              "Invalid transition: Cannot move from 'underConfirmation' back to 'visitCompleted'."
+            };
+            case (#bookedViaSTYO, _) {
+              "Invalid transition: Cannot change status from 'bookedViaSTYO'."
+            };
+            case (_) {
+              "Invalid property status transition."
+            };
+          };
+          Runtime.trap(errorMsg);
+        };
+
+        let updatedListing : Listing = {
+          existingListing with
+          propertyStatus = newStatus;
+          lastUpdated = now;
+          statusTimestamp = now;
+        };
+
+        listings.add(_listingId, updatedListing);
+      };
+      case (null) {
+        Runtime.trap("Listing not found");
+      };
+    };
+  };
+
+  // System function to process expired confirmations (can be called by anyone to trigger cleanup)
+  public shared ({ caller }) func processExpiredListings() : async Nat {
+    processExpiredConfirmations();
+    var count = 0;
+    for ((_, listing) in listings.toArray().values()) {
+      if (listing.propertyStatus == #available) {
+        count += 1;
+      };
+    };
+    count;
   };
 
   public shared ({ caller }) func approveListing(_listingId : Nat) : async () {
@@ -899,6 +1009,7 @@ actor {
           location = existingListing.location;
           availability = existingListing.availability;
           propertyStatus = existingListing.propertyStatus;
+          statusTimestamp = existingListing.statusTimestamp;
           owner = existingListing.owner;
           contactInfo = existingListing.contactInfo;
           verified = existingListing.verified;
@@ -936,6 +1047,7 @@ actor {
           location = existingListing.location;
           availability = existingListing.availability;
           propertyStatus = existingListing.propertyStatus;
+          statusTimestamp = existingListing.statusTimestamp;
           owner = existingListing.owner;
           contactInfo = existingListing.contactInfo;
           verified = existingListing.verified;
@@ -973,6 +1085,7 @@ actor {
           location = existingListing.location;
           availability = existingListing.availability;
           propertyStatus = existingListing.propertyStatus;
+          statusTimestamp = existingListing.statusTimestamp;
           owner = existingListing.owner;
           contactInfo = existingListing.contactInfo;
           verified = _verified;
@@ -1098,6 +1211,7 @@ actor {
       location = listing.location;
       availability = listing.availability;
       propertyStatus = #available;
+      statusTimestamp = Time.now();
       owner = caller;
       contactInfo = listing.contactInfo;
       verified = false;
@@ -1238,312 +1352,6 @@ actor {
       },
     ];
     await Stripe.createPayment(stripe, caller, items, "/payment-success", "/payment-cancel");
-  };
-
-  public shared ({ caller }) func initializeDemoData() : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can initialize demo data");
-    };
-
-    let demoData = [
-      (
-        0,
-        {
-          id = 0;
-          title = "Sunny PG Hostel";
-          description = "Cozy and affordable PG hostel in the heart of the city.";
-          category = #pgHostel;
-          pricePerDay = 400;
-          images = [];
-          location = {
-            lat = 28.61;
-            lon = 77.23;
-            address = "Delhi, India";
-          };
-          availability = {
-            status = #available;
-            availableUnits = 5;
-            unitType = "Beds";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "sunny@pg.com";
-          verified = true;
-          featured = true;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        1,
-        {
-          id = 1;
-          title = "Family Flat Bliss";
-          description = "Spacious family flat with modern amenities.";
-          category = #familyFlat;
-          pricePerDay = 1200;
-          images = [];
-          location = {
-            lat = 19.076;
-            lon = 72.8777;
-            address = "Mumbai, India";
-          };
-          availability = {
-            status = #partiallyAvailable;
-            availableUnits = 2;
-            unitType = "Rooms";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "owner@flat.com";
-          verified = true;
-          featured = true;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        2,
-        {
-          id = 2;
-          title = "Hotel Elegant";
-          description = "Luxury hotel with premium services and facilities.";
-          category = #hotel;
-          pricePerDay = 3000;
-          images = [];
-          location = {
-            lat = 12.9716;
-            lon = 77.5946;
-            address = "Bengaluru, India";
-          };
-          availability = {
-            status = #available;
-            availableUnits = 10;
-            unitType = "Rooms";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "contact@hotelegant.com";
-          verified = true;
-          featured = true;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        3,
-        {
-          id = 3;
-          title = "Grand Marriage Hall";
-          description = "Spacious marriage hall with all facilities.";
-          category = #marriageHall;
-          pricePerDay = 8000;
-          images = [];
-          location = {
-            lat = 13.0827;
-            lon = 80.2707;
-            address = "Chennai, India";
-          };
-          availability = {
-            status = #booked;
-            availableUnits = 0;
-            unitType = "Halls";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "grand@marriagehall.com";
-          verified = true;
-          featured = false;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        4,
-        {
-          id = 4;
-          title = "Student Stay Inn";
-          description = "Affordable student accommodation near campus.";
-          category = #studentStay;
-          pricePerDay = 350;
-          images = [];
-          location = {
-            lat = 28.7041;
-            lon = 77.1025;
-            address = "Delhi, India";
-          };
-          availability = {
-            status = #available;
-            availableUnits = 8;
-            unitType = "Beds";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "student@stayinn.com";
-          verified = true;
-          featured = true;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        5,
-        {
-          id = 5;
-          title = "Travel Stay Paradise";
-          description = "Comfortable stay for travellers with modern amenities.";
-          category = #travelStay;
-          pricePerDay = 700;
-          images = [];
-          location = {
-            lat = 18.5204;
-            lon = 73.8567;
-            address = "Pune, India";
-          };
-          availability = {
-            status = #available;
-            availableUnits = 6;
-            unitType = "Rooms";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "paradise@travelstay.com";
-          verified = true;
-          featured = false;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-      (
-        6,
-        {
-          id = 6;
-          title = "Event Space Galaxy";
-          description = "Modern event space perfect for all types of gatherings.";
-          category = #eventSpace;
-          pricePerDay = 4000;
-          images = [];
-          location = {
-            lat = 22.5726;
-            lon = 88.3639;
-            address = "Kolkata, India";
-          };
-          availability = {
-            status = #partiallyAvailable;
-            availableUnits = 3;
-            unitType = "Halls";
-            dates = null;
-          };
-          propertyStatus = #available;
-          owner = Principal.fromText("2vxsx-fae");
-          contactInfo = "galaxy@eventspace.com";
-          verified = true;
-          featured = true;
-          createdAt = Time.now();
-          lastUpdated = Time.now();
-          approvalStatus = #approved;
-        },
-      ),
-    ];
-
-    for ((id, listing) in demoData.values()) {
-      demoListings.add(id, listing);
-    };
-    let demoMarkers = [
-      (
-        0,
-        {
-          id = 0;
-          location = {
-            lat = 28.61;
-            lon = 77.23;
-            address = "Delhi, India";
-          };
-          type_ = "PG Hostel";
-          message = "PG found in 24h!";
-          badge = "Verified";
-          createdAt = Time.now();
-        },
-      ),
-      (
-        1,
-        {
-          id = 1;
-          location = {
-            lat = 19.076;
-            lon = 72.8777;
-            address = "Mumbai, India";
-          };
-          type_ = "Family Flat";
-          message = "Verified & Trusted";
-          badge = "Top Rated";
-          createdAt = Time.now();
-        },
-      ),
-    ];
-
-    for ((id, marker) in demoMarkers.values()) {
-      eventMarkers.add(id, marker);
-    };
-  };
-
-  public shared ({ caller }) func initialize() : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can initialize");
-    };
-    await initializeDemoData();
-    await initializeStripePrices();
-    _initializeCityChargeSettings();
-  };
-
-  public shared ({ caller }) func adminInitialize() : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can initialize");
-    };
-    await initializeDemoData();
-    await initializeStripePrices();
-    _initializeCityChargeSettings();
-  };
-
-  func _initializeCityChargeSettings() {
-    let kolkataSettings = {
-      customerLeadCharge = false;
-      ownerLeadCharge = false;
-      subscription = false;
-    };
-    cityChargeSettings.add("Kolkata", kolkataSettings);
-    let cities = [
-      "Delhi",
-      "Mumbai",
-      "Bangalore",
-      "Chennai",
-      "Hyderabad",
-      "Pune",
-      "Ahmedabad",
-      "Surat",
-      "Jaipur",
-      "Lucknow",
-      "Nagpur",
-      "Indore",
-      "Bhopal",
-      "Visakhapatnam",
-      "Patna",
-    ];
-    for (city in cities.values()) {
-      cityChargeSettings.add(city, kolkataSettings);
-    };
   };
 
   public query ({ caller }) func getAdminDashboardData() : async {

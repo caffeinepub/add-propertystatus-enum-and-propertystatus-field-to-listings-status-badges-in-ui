@@ -1,10 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Ensure every newly created backend `Listing` explicitly defaults `propertyStatus` to `#available`.
+**Goal:** Enforce a backend-only PropertyStatus transition state machine for listings, including a 24-hour timeout that auto-reverts expired `#underConfirmation` listings back to `#available`.
 
 **Planned changes:**
-- Update `backend/main.mo` listing creation logic to set `propertyStatus = #available` whenever constructing and storing a new `Listing`.
-- Apply the explicit `propertyStatus` assignment across all code paths that create new listings (including owner/user-created, public submission flows that become listings, and any demo/seed creation if present).
+- Add a shared backend method to request a `propertyStatus` transition for a given listing id, rejecting any transition outside: `#available → #visitCompleted`, `#visitCompleted → #underConfirmation`, `#underConfirmation → #bookedViaSTYO`, and rejecting any transitions from `#bookedViaSTYO`.
+- Return clear English error messages for invalid transitions.
+- Enforce authorization so only the listing owner or an admin can perform valid transitions (system-driven auto-revert bypasses caller authorization).
+- Persist non-breaking tracking data for when a listing entered `#underConfirmation`, and automatically revert to `#available` once 24 hours elapse without transitioning to `#bookedViaSTYO`, clearing the stored tracking data.
+- Ensure reads (e.g., getListing/getListings) do not continue to show expired `#underConfirmation` statuses after the auto-revert is applied.
 
-**User-visible outcome:** Newly created listings returned by the existing backend API have `propertyStatus` set to `#available` by default, with no other behavior changes.
+**User-visible outcome:** Listings will only move through the allowed status sequence; unauthorized or invalid transitions will fail with clear English errors; and any listing left in `#underConfirmation` for over 24 hours will automatically revert to `#available`.

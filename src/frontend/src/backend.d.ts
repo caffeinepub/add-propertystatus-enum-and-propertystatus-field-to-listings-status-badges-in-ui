@@ -44,6 +44,7 @@ export interface Listing {
     category: ListingCategory;
     propertyStatus: PropertyStatus;
     location: GeoLocation;
+    statusTimestamp: Time;
     images: Array<ExternalBlob>;
 }
 export interface CreatePaymentResponse {
@@ -196,7 +197,6 @@ export enum Variant_partiallyAvailable_booked_available {
 }
 export interface backendInterface {
     addReview(listingId: bigint, rating: bigint, comment: string): Promise<bigint>;
-    adminInitialize(): Promise<void>;
     approveListing(_listingId: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bulkUpdateCityCharges(updates: Array<[string, CityChargeSettings]>): Promise<void>;
@@ -234,14 +234,13 @@ export interface backendInterface {
     getReviewsForListing(listingId: bigint): Promise<Array<Review>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getVerifiedListings(): Promise<Array<Listing>>;
-    initialize(): Promise<void>;
-    initializeDemoData(): Promise<void>;
     initializeStripePrices(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
     isFreeTrialMode(): Promise<boolean>;
     markNotificationAsRead(notificationId: bigint): Promise<void>;
     paymentCancel(sessionId: string): Promise<PaymentCancelResponse>;
     paymentSuccess(sessionId: string, accountId: string, caffeineCustomerId: string): Promise<PaymentSuccessResponse>;
+    processExpiredListings(): Promise<bigint>;
     quickPublishMode(): Promise<QuickPublishResult>;
     rejectListing(_listingId: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
@@ -251,5 +250,6 @@ export interface backendInterface {
     updateCityChargeSettings(city: string, settings: CityChargeSettings): Promise<void>;
     updateListing(_id: bigint, _listing: Listing): Promise<void>;
     updateOwnerProfile(_profile: OwnerProfile): Promise<void>;
+    updatePropertyStatus(_listingId: bigint, newStatus: PropertyStatus): Promise<void>;
     verifyListing(_listingId: bigint, _verified: boolean): Promise<void>;
 }
