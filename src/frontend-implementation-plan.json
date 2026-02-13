@@ -1,6 +1,77 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "PropertyStatus transition state machine + 24h underConfirmation timeout (frontend-only scope)",
-  "requirements": []
+  "title": "Legal policy text updates + footer policy links + new policy routes",
+  "requirements": [
+    {
+      "id": "REQ-4",
+      "summary": "Strengthen Booking Policy & Terms content with the user-provided disclaimer, dispute clause, ₹99 unlock fee refund bullets, and privacy statement (English, verbatim where specified).",
+      "acceptanceCriteria": [
+        "BookingPolicyPage includes the exact disclaimer text and the exact dispute clause text as provided by the user (verbatim).",
+        "The ₹99 unlock fee refund policy is shown as a bullet list and includes only the three refund-eligible conditions specified by the user, plus a clear statement that all other cases are non-refundable.",
+        "A data privacy statement is present and explicitly states: contact details are shared only after successful unlock payment; STYO does not sell/share personal data with third parties without consent; exception for legal requirements.",
+        "All text added/updated for these sections is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookingPolicyPage.tsx",
+          "operation": "modify",
+          "description": "Update the Booking Policy & Terms page copy to (1) include the following disclaimer verbatim: \"STYO is a digital listing platform and not a real estate broker, agent, or property manager. STYO does not guarantee property condition, legality, availability, pricing accuracy, or transaction completion. All agreements and transactions are solely between the property owner and the seeker.\" (2) include the following dispute clause verbatim: \"Any disputes, damages, fraud, misrepresentation, or conflicts arising after contact unlock shall be solely between the property owner and the seeker. STYO shall not be liable for such disputes.\" (3) replace/adjust any conflicting refund language to present the ₹99 unlock fee refund eligibility strictly as bullets with ONLY: \"Property owner is unreachable within 48 hours\", \"Listing is proven fake after admin verification\", \"Duplicate unlock payment due to system error\", plus a clear statement: unlock fee is non-refundable in all other cases; and (4) add a data privacy statement explicitly covering contact sharing only after successful unlock and no third-party sharing without consent except where required by law. Ensure all new/updated user-facing text is English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update footer to visibly display the exact legal/contact link labels and ensure correct navigation and mailto behavior.",
+      "acceptanceCriteria": [
+        "Footer displays four items with the exact labels: Privacy Policy, Terms & Conditions, Refund Policy, Contact Email.",
+        "Privacy Policy, Terms & Conditions, and Refund Policy each navigate to a dedicated frontend route/page.",
+        "Contact Email is a mailto link (e.g., mailto:support@styo.in) and is clickable from the footer."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Replace the current Legal section links with four visibly displayed items labeled exactly: \"Privacy Policy\" | \"Terms & Conditions\" | \"Refund Policy\" | \"Contact Email\". Wire the first three to the dedicated policy routes/pages added in REQ-6, and make \"Contact Email\" a clickable mailto link (use mailto:support@styo.in). Ensure labels match exactly (case and punctuation)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add dedicated routes/pages for Privacy Policy, Terms & Conditions, and Refund Policy, aligned with the updated legal positions and consistent with Booking Policy & Terms.",
+      "acceptanceCriteria": [
+        "Routes exist for Privacy Policy, Terms & Conditions, and Refund Policy and are reachable via the footer links.",
+        "Refund Policy page presents the ₹99 unlock fee refund eligibility in bullets exactly as specified by the user.",
+        "Privacy Policy page includes the requested data privacy statement as specified by the user.",
+        "Terms & Conditions page includes the requested platform disclaimer and the requested dispute clause as specified by the user."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/PrivacyPolicyPage.tsx",
+          "operation": "create",
+          "description": "Create a dedicated Privacy Policy page (English) that includes the requested data privacy statement: user contact details are shared only after successful unlock payment; STYO does not sell or share personal data with third parties without user consent, except where required by law. Ensure the language does not contradict the Booking Policy & Terms page."
+        },
+        {
+          "path": "frontend/src/pages/TermsConditionsPage.tsx",
+          "operation": "create",
+          "description": "Create a dedicated Terms & Conditions page (English) that includes the user-provided platform disclaimer verbatim and the dispute clause verbatim, and does not contradict the Booking Policy & Terms page."
+        },
+        {
+          "path": "frontend/src/pages/RefundPolicyPage.tsx",
+          "operation": "create",
+          "description": "Create a dedicated Refund Policy page (English) that presents the ₹99 unlock fee refund eligibility strictly as a bullet list with ONLY the three specified conditions (unreachable within 48 hours; proven fake after admin verification; duplicate unlock payment due to system error) and a clear statement that the unlock fee is non-refundable in all other cases. Ensure consistency with the Booking Policy & Terms page."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register new TanStack Router routes for the new pages: Privacy Policy, Terms & Conditions, and Refund Policy, and ensure the paths match what the footer links use so navigation works end-to-end."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Wire the footer items to the newly registered routes/pages for Privacy Policy, Terms & Conditions, and Refund Policy, ensuring the footer links are the primary navigation path to these pages."
+        }
+      ]
+    }
+  ]
 }

@@ -1,14 +1,44 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "Implement IST dual-confirmation booking model incrementally; current step is to add only backend propertyStatus transition logic with a 24h underConfirmation timeout/revert, explicitly excluding payments and dashboards for now.",
+  "projectStateVersion": 5,
+  "summary": "Scope expanded from propertyStatus transition logic to include: (1) fixing the underConfirmation expiry trigger by replacing the failing timer with a system heartbeat calling processExpiredConfirmations(); (2) backend-only ₹99 per-listing unlock tracking (in-memory) with listing validity checks; and (3) updating Booking Policy/Terms, refund policy, privacy statement, and footer links for stronger legal clarity.",
   "architectural_notes": [
     "Implement IST workflow step-by-step; current scope limited to propertyStatus transitions only (no payment logic, no dashboards).",
-    "Add time-based rule: underConfirmation expires after 24h and reverts listing to available if not confirmed."
+    "Add time-based rule: underConfirmation expires after 24h and reverts listing to available if not confirmed.",
+    "Replace failing timer-based expiry trigger with system heartbeat calling processExpiredConfirmations() to handle underConfirmation expiration safely.",
+    "Implement ₹99 unlock as backend-only in-memory UnlockRecord keyed by (listingId, user); unlock is strictly per listing and per user; no global pass and no payment integration yet.",
+    "unlockListing must validate listing exists, is approvalStatus=approved, and is not propertyStatus=#bookedViaSTYO before recording unlock."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "existing_features": [],
+  "known_issues": [
+    "Need verification/confirmation that admin verification workflow and the 24-hour underConfirmation timeout logic are properly implemented on backend (user requested confirmation)."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-update-the-existing-booking-policy-terms-page-content-to-include-stronger-legal-protection-and-clarity-including-a-the-exact-platform-disclaimer-text-provided-by-the-user-b-the-exact-dispute-liability-clause-provided-by-the-user-c-an-updated-99-unlock-fee-refund-policy-presented-in-bullet-format-with-exactly-the-listed-refund-eligible-conditions-and-a-clear-statement-that-the-unlock-fee-is-non-refundable-in-all-other-cases-and-d-a-data-privacy-statement-covering-contact-sharing-only-after-successful-unlock-and-no-third-party-sharing-without-consent-except-where-required-by-law-all-user-facing-text-must-be-in-english",
+      "title": "Update the existing Booking Policy & Terms page content to include stronger legal protection and clarity, including (a) the exact platform disclaimer text provided by the user, (b) the exact dispute/liability clause provided by the user, (c) an updated ₹99 unlock fee refund policy presented in bullet format with exactly the listed refund-eligible conditions and a clear statement that the unlock fee is non-refundable in all other cases, and (d) a data privacy statement covering contact sharing only after successful unlock and no third-party sharing without consent except where required by law. All user-facing text must be in English.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-site-footer-to-include-and-visibly-display-proper-links-exactly-labeled-privacy-policy-terms-conditions-refund-policy-contact-email-ensure-each-item-navigates-to-an-appropriate-route-page-for-the-three-policies-and-opens-an-email-link-for-contact-email",
+      "title": "Update the site footer to include and visibly display proper links exactly labeled: \"Privacy Policy\" | \"Terms & Conditions\" | \"Refund Policy\" | \"Contact Email\". Ensure each item navigates to an appropriate route/page (for the three policies) and opens an email link for Contact Email.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-dedicated-frontend-pages-routes-for-privacy-policy-terms-conditions-and-refund-policy-english-text-ensure-these-pages-include-the-same-updated-legal-positions-requested-by-the-user-where-relevant-platform-disclaimer-dispute-clause-post-unlock-refund-eligibility-bullets-for-99-unlock-fee-and-the-data-privacy-statement-without-contradicting-the-booking-policy-terms-page",
+      "title": "Add dedicated frontend pages/routes for Privacy Policy, Terms & Conditions, and Refund Policy (English text). Ensure these pages include the same updated legal positions requested by the user where relevant (platform disclaimer, dispute clause post-unlock, refund eligibility bullets for ₹99 unlock fee, and the data privacy statement) without contradicting the Booking Policy & Terms page.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
   "new_feature_requests": [
     {
       "id": "AR-1",
@@ -37,6 +67,38 @@
       "summary": "Enforce authorization rules for propertyStatus transitions so only the listing owner or an admin can advance the propertyStatus for that listing (auto-revert is system-driven).",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Fix the 24h underConfirmation expiry trigger by removing the timer implementation that caused deployment errors and instead using system func heartbeat() to call processExpiredConfirmations(), changing nothing else and generating no docs.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Implement backend-only ₹99 unlock tracking per listingId per user: add UnlockRecord type, in-memory storage, unlockListing(listingId) to record paidAmount=99 and return true if already unlocked, and hasUnlocked(listingId,user) check; no real payment integration and do not modify other systems.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Enhance unlockListing(): before creating UnlockRecord, verify listing exists, listing approvalStatus is approved, and listing.propertyStatus is not #bookedViaSTYO; if any check fails return false; do not modify other logic.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Update Booking Policy & Terms section and footer: add STYO platform disclaimer, dispute/liability clause post-unlock, bullet refund policy for ₹99 unlock fee with specific refund conditions, data privacy statement about contact sharing and no third-party sharing without consent (except legal), and ensure footer links (Privacy Policy | Terms & Conditions | Refund Policy | Contact Email).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Verify and, if missing or incomplete, implement the backend admin verification workflow for listings (including public submissions) and the 24-hour under-confirmation timeout logic. Specifically: ensure (a) an admin-only workflow exists to review/approve/reject submitted listings, (b) listing approvalStatus is enforced consistently for actions that require an approved listing, and (c) listings in propertyStatus #underConfirmation automatically revert to #available after 24 hours (system-driven).",
+      "reqIds": [
+        "REQ-7"
       ],
       "status": "pending"
     }

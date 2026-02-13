@@ -240,6 +240,7 @@ export interface _SERVICE {
     }
   >,
   'getAdminNotifications' : ActorMethod<[], Array<AdminNotification>>,
+  'getAllListingsForReview' : ActorMethod<[], Array<Listing>>,
   'getAvailability' : ActorMethod<[bigint], [] | [AvailabilityStatus]>,
   'getAvailabilityCounts' : ActorMethod<[], AvailabilityCounts>,
   'getAvailableListings' : ActorMethod<[], Array<Listing>>,
@@ -256,6 +257,7 @@ export interface _SERVICE {
   'getLeadAnalytics' : ActorMethod<[], Array<LeadView>>,
   'getListing' : ActorMethod<[bigint], [] | [Listing]>,
   'getListings' : ActorMethod<[], Array<Listing>>,
+  'getListingsByApprovalStatus' : ActorMethod<[ApprovalStatus], Array<Listing>>,
   'getListingsByCategory' : ActorMethod<[ListingCategory], Array<Listing>>,
   'getListingsByLocation' : ActorMethod<
     [number, number, [] | [number]],

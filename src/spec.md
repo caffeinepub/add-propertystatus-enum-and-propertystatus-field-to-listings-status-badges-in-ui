@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Enforce a backend-only PropertyStatus transition state machine for listings, including a 24-hour timeout that auto-reverts expired `#underConfirmation` listings back to `#available`.
+**Goal:** Strengthen and clarify STYO’s policy/legal disclosures across the Booking Policy & Terms page and new dedicated policy pages, update footer links, and confirm backend listing verification and timeout workflows work as intended.
 
 **Planned changes:**
-- Add a shared backend method to request a `propertyStatus` transition for a given listing id, rejecting any transition outside: `#available → #visitCompleted`, `#visitCompleted → #underConfirmation`, `#underConfirmation → #bookedViaSTYO`, and rejecting any transitions from `#bookedViaSTYO`.
-- Return clear English error messages for invalid transitions.
-- Enforce authorization so only the listing owner or an admin can perform valid transitions (system-driven auto-revert bypasses caller authorization).
-- Persist non-breaking tracking data for when a listing entered `#underConfirmation`, and automatically revert to `#available` once 24 hours elapse without transitioning to `#bookedViaSTYO`, clearing the stored tracking data.
-- Ensure reads (e.g., getListing/getListings) do not continue to show expired `#underConfirmation` statuses after the auto-revert is applied.
+- Update the Booking Policy & Terms page to include the user-provided platform disclaimer (verbatim), dispute/liability clause (verbatim), ₹99 unlock fee refund policy (bullet list with only the three eligible conditions + “non-refundable in all other cases”), and a data privacy statement about contact sharing and third-party data sharing limitations (English only).
+- Add dedicated frontend pages/routes for: Privacy Policy, Terms & Conditions, and Refund Policy, ensuring the relevant legal positions (disclaimer, dispute clause, refund bullets, privacy statement) are included without contradicting the Booking Policy & Terms page.
+- Update the site footer to visibly display links labeled exactly: “Privacy Policy” | “Terms & Conditions” | “Refund Policy” | “Contact Email”, with the first three navigating to their routes and “Contact Email” opening a mailto link.
+- Verify the backend admin listing verification workflow and approvalStatus enforcement, and ensure listings in #underConfirmation automatically revert to #available after 24 hours via a system-driven process (and that the frontend hook can call the backend method, or an equivalent backend mechanism exists).
 
-**User-visible outcome:** Listings will only move through the allowed status sequence; unauthorized or invalid transitions will fail with clear English errors; and any listing left in `#underConfirmation` for over 24 hours will automatically revert to `#available`.
+**User-visible outcome:** Users can read clearer legal terms, refund rules, and privacy statements (in English) across dedicated policy pages and the Booking Policy & Terms page, access them from the footer, and the platform consistently enforces listing approval/verification and automatically expires under-confirmation listings after 24 hours.

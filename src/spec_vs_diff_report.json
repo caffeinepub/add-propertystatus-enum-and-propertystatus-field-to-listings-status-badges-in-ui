@@ -1,74 +1,66 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T08:03:10.512Z",
-  "summary": "Diff introduces a schema change adding `statusTimestamp` to `Listing` plus a migration module, and adds/updates multiple frontend hooks/pages. However, the diff summary does not provide evidence that the required backend-only PropertyStatus transition state machine, authorization enforcement, or 24-hour underConfirmation auto-revert logic is actually implemented in `backend/main.mo`.",
+  "generatedAt": "2026-02-13T22:54:48.525Z",
+  "summary": "Frontend adds new Privacy/Terms/Refund pages and routes, and updates the footer with the requested legal links and mailto contact. However, the diff does not provide evidence that the Booking Policy/Terms and Terms & Conditions pages include the user-provided disclaimer/dispute clauses verbatim or that the ₹99 refund eligibility bullets match exactly the specified conditions. Backend changes are truncated and do not show the required admin verification workflow, approval enforcement, or the system-driven 24h under-confirmation reversion. Additionally, Stripe/payment-related backend code appears introduced despite being a non-goal.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Add backend-only PropertyStatus transition logic with exactly these allowed transitions (#available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO) and reject all other transitions with an English error message via a shared backend method taking a listing id.",
-      "reason": "The `PropertyStatus` variants are present, but the diff summary does not show any new shared backend method for requesting transitions, nor any logic enforcing the exact allowed transitions or producing English invalid-transition errors.",
+      "id": "REQ-4",
+      "requirement": "Booking Policy & Terms page must include the exact platform disclaimer text and exact dispute/liability clause text provided by the user (verbatim), plus the ₹99 unlock fee refund policy as a bullet list with exactly the three refund-eligible conditions specified by the user and a clear non-refundable otherwise statement, plus a data privacy statement (English).",
+      "reason": "The BookingPolicyPage and TermsConditionsPage show disclaimer/disclaimer-like text, but there is no evidence it matches the user-provided text verbatim. The dispute clause section is truncated and cannot be verified. The refund eligibility bullets/conditions are truncated and cannot be confirmed to match exactly the three specified conditions. The BookingPolicyPage snippet does not show the required privacy statement (may exist later, but not evidenced).",
       "evidence": [
-        "backend/main.mo (truncated)"
+        "frontend/src/pages/BookingPolicyPage.tsx",
+        "frontend/src/pages/TermsConditionsPage.tsx",
+        "frontend/src/pages/RefundPolicyPage.tsx"
       ]
     },
     {
-      "id": "REQ-2",
-      "requirement": "Implement 24-hour timeout for #underConfirmation: persist non-breaking timestamp tracking, auto-revert expired listings to #available, clear stored timestamp tracking, and ensure reads no longer show expired #underConfirmation.",
-      "reason": "A new `statusTimestamp` field is added and a migration populates it, but there is no evidence of the 24-hour expiration check, automatic revert to `#available`, clearing of the timestamp tracking for expired entries, or applying the rule during reads (e.g., `getListing/getListings`). Also, adding `statusTimestamp` to the `Listing` record suggests a potentially breaking schema change, contrary to the acceptance criterion, and no alternative non-breaking tracking mechanism is shown.",
+      "id": "REQ-6",
+      "requirement": "Dedicated Privacy Policy, Terms & Conditions, and Refund Policy pages/routes must include the same updated legal positions where relevant (verbatim disclaimer + dispute clause; exact ₹99 refund bullets; specified privacy statement) without contradicting the Booking Policy & Terms page.",
+      "reason": "Routes/pages exist, and PrivacyPolicyPage includes the requested privacy statement language, but there is no evidence the Terms & Conditions page contains the user-provided disclaimer/dispute clauses verbatim, and the Refund Policy page’s bullet conditions are truncated so exactness cannot be verified.",
       "evidence": [
-        "backend/main.mo (truncated)",
-        "backend/migration.mo"
+        "frontend/src/App.tsx",
+        "frontend/src/pages/PrivacyPolicyPage.tsx",
+        "frontend/src/pages/TermsConditionsPage.tsx",
+        "frontend/src/pages/RefundPolicyPage.tsx"
       ]
     },
     {
-      "id": "REQ-3",
-      "requirement": "Enforce authorization so only listing owner or admin can advance propertyStatus (auto-revert is system-driven and not blocked by auth).",
-      "reason": "The diff summary shows inclusion of authorization mixins but does not show any new authorization checks tied specifically to a propertyStatus transition method, nor logic to allow system-driven auto-revert without caller authorization.",
+      "id": "REQ-7",
+      "requirement": "Backend must provide an admin-only review/approve/reject workflow for listing submissions with persisted approvalStatus changes, enforce approvalStatus for actions requiring approved listings (e.g., unlockListing fails if not approved), and implement a system-driven 24-hour auto-revert from #underConfirmation to #available.",
+      "reason": "backend/main.mo is heavily truncated; while ApprovalStatus/PropertyStatus/statusTimestamp types exist, there is no visible evidence of (a) admin-only approval/rejection endpoints, (b) enforcement checks (e.g., unlockListing gating on approvalStatus), or (c) a system-driven 24h expiry process (e.g., heartbeat/timer + processExpiredConfirmations). The diff summary mentions a frontend hook useProcessExpiredListings, but the corresponding backend callable method is not evidenced.",
       "evidence": [
-        "backend/main.mo (truncated)"
+        "backend/main.mo",
+        "frontend-file-summaries.txt"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Introduced a separate backend migration module/file and wired it into the actor.",
-      "reason": "BuildRequest constraint says to keep backend architecture as a single Motoko actor in `backend/main.mo`; adding `backend/migration.mo` introduces extra backend architecture beyond the single-actor file constraint.",
+      "description": "Stripe/payment integration code added to the backend (Stripe imports and mixins).",
+      "reason": "The BuildRequest explicitly lists implementing real payment processing or Stripe-based refunds as a non-goal, yet backend/main.mo includes Stripe and StripeMixin initialization.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo (truncated) (with migration = Migration.run)"
+        "backend/main.mo"
       ]
     },
     {
-      "description": "Added frontend functionality for updating property status and processing expired listings via new React Query hooks.",
-      "reason": "BuildRequest scope is backend-only propertyStatus transition logic and 24h timeout revert; frontend UI/hooks (e.g., `useUpdatePropertyStatus`, `useProcessExpiredListings`) are outside scope and non-goals include UI work for confirmations/dashboards.",
+      "description": "Large-scale frontend visual/UX redesign work (hero parallax, premium landing page redesign, listing card variants, map explore section, etc.) unrelated to the requested legal pages/footer/backend verification tasks.",
+      "reason": "The BuildRequest focuses on legal text/pages, footer links, and backend verification/timeout workflows; the diff summary indicates extensive additional UI/animation/design changes beyond that scope.",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts (truncated)",
-        "frontend-file-summaries.txt (mentions new useUpdatePropertyStatus and useProcessExpiredListings)"
-      ]
-    },
-    {
-      "description": "Expanded/modified Property Management UI page to use property status update hooks and related UI behavior.",
-      "reason": "UI changes are not requested; requirements focus on backend transition logic and timeout behavior only.",
-      "evidence": [
-        "frontend/src/pages/PropertyManagementPage.tsx (truncated)"
-      ]
-    },
-    {
-      "description": "Added frontend IP/location capture behavior during user profile save.",
-      "reason": "Not requested by the BuildRequest; unrelated to propertyStatus transition state machine and 24h timeout.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts (truncated) (\"Capture IP and location data\")"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.66,
   "changed_files": [
     "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/PropertyManagementPage.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/pages/BookingPolicyPage.tsx",
+    "frontend/src/pages/PrivacyPolicyPage.tsx",
+    "frontend/src/pages/RefundPolicyPage.tsx",
+    "frontend/src/pages/TermsConditionsPage.tsx",
     "project_state.json"
   ]
 }

@@ -12,6 +12,9 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import PropertyManagementPage from './pages/PropertyManagementPage';
 import AboutUsPage from './pages/AboutUsPage';
 import BookingPolicyPage from './pages/BookingPolicyPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsConditionsPage from './pages/TermsConditionsPage';
+import RefundPolicyPage from './pages/RefundPolicyPage';
 import PublicPropertySubmissionPage from './pages/PublicPropertySubmissionPage';
 import { ListingCategory } from './backend';
 
@@ -80,6 +83,24 @@ const bookingPolicyRoute = createRoute({
   component: BookingPolicyPage,
 });
 
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/privacy-policy',
+  component: PrivacyPolicyPage,
+});
+
+const termsConditionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/terms-conditions',
+  component: TermsConditionsPage,
+});
+
+const refundPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/refund-policy',
+  component: RefundPolicyPage,
+});
+
 const publicSubmissionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/submit-property',
@@ -96,6 +117,9 @@ const routeTree = rootRoute.addChildren([
   propertyManagementRoute,
   aboutUsRoute,
   bookingPolicyRoute,
+  privacyPolicyRoute,
+  termsConditionsRoute,
+  refundPolicyRoute,
   publicSubmissionRoute,
 ]);
 

@@ -1,6 +1,11 @@
 import { SiX, SiFacebook, SiInstagram, SiLinkedin } from 'react-icons/si';
+import { Heart } from 'lucide-react';
 
 export default function Footer() {
+  const appIdentifier = typeof window !== 'undefined' 
+    ? encodeURIComponent(window.location.hostname) 
+    : 'styo-app';
+
   return (
     <footer 
       className="relative py-12 border-t"
@@ -46,8 +51,17 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Legal</h3>
             <ul className="space-y-2 text-white/70 text-sm">
-              <li><a href="/booking-policy" className="hover:text-white transition-colors">Booking Policy</a></li>
-              <li><a href="/booking-policy" className="hover:text-white transition-colors">Terms & Conditions</a></li>
+              <li><a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms-conditions" className="hover:text-white transition-colors">Terms & Conditions</a></li>
+              <li><a href="/refund-policy" className="hover:text-white transition-colors">Refund Policy</a></li>
+              <li>
+                <a 
+                  href="mailto:support@styo.in" 
+                  className="hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  Contact Email
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -68,20 +82,23 @@ export default function Footer() {
                 <SiLinkedin className="w-6 h-6" />
               </a>
             </div>
-            <p className="text-white/70 text-sm">support@styo.in</p>
+            <p className="text-white/70 text-sm">
+              Email: <a href="mailto:support@styo.in" className="hover:text-white transition-colors">support@styo.in</a>
+            </p>
           </div>
         </div>
 
-        <div 
-          className="border-t pt-8 text-center"
-          style={{ borderTopColor: 'rgba(255, 255, 255, 0.1)' }}
-        >
-          <p className="text-white/70 text-sm">
-            © 2025. Built with <span className="text-red-500">❤️</span> using{' '}
+        {/* Bottom Bar */}
+        <div className="border-t border-white/10 pt-8 text-center">
+          <p className="text-white/60 text-sm mb-2">
+            © {new Date().getFullYear()} STYO. All rights reserved.
+          </p>
+          <p className="text-white/50 text-xs flex items-center justify-center gap-1">
+            Built with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> using{' '}
             <a 
-              href="https://caffeine.ai" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               caffeine.ai

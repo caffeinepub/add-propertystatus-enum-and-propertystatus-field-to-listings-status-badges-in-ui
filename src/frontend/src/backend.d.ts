@@ -215,6 +215,7 @@ export interface backendInterface {
         cityCharges: Array<[string, CityChargeSettings]>;
     }>;
     getAdminNotifications(): Promise<Array<AdminNotification>>;
+    getAllListingsForReview(): Promise<Array<Listing>>;
     getAvailability(id: bigint): Promise<AvailabilityStatus | null>;
     getAvailabilityCounts(): Promise<AvailabilityCounts>;
     getAvailableListings(): Promise<Array<Listing>>;
@@ -228,6 +229,7 @@ export interface backendInterface {
     getLeadAnalytics(): Promise<Array<LeadView>>;
     getListing(id: bigint): Promise<Listing | null>;
     getListings(): Promise<Array<Listing>>;
+    getListingsByApprovalStatus(status: ApprovalStatus): Promise<Array<Listing>>;
     getListingsByCategory(category: ListingCategory): Promise<Array<Listing>>;
     getListingsByLocation(lat: number, lon: number, radius: number | null): Promise<Array<Listing>>;
     getPendingSubmissions(): Promise<Array<[bigint, PublicListingSubmission]>>;

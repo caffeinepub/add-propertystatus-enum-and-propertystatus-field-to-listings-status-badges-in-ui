@@ -1,8 +1,8 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { FileText, Shield, AlertCircle, CreditCard, HelpCircle, Lock } from 'lucide-react';
+import { FileText, Shield, AlertTriangle, Users, Scale } from 'lucide-react';
 
-export default function BookingPolicyPage() {
+export default function TermsConditionsPage() {
   return (
     <div className="min-h-screen bg-slate-950 relative overflow-hidden">
       {/* Background with gradient */}
@@ -42,10 +42,10 @@ export default function BookingPolicyPage() {
               textShadow: '0 0 40px rgba(59, 130, 246, 0.6)',
             }}
           >
-            Booking Policy & Terms
+            Terms & Conditions
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Please read our policies carefully before making a booking
+            Please read these terms carefully before using STYO
           </p>
         </div>
 
@@ -77,148 +77,156 @@ export default function BookingPolicyPage() {
                       STYO does not guarantee property condition, legality, availability, pricing accuracy, or transaction completion. All agreements and transactions are solely between the property owner and the seeker.
                     </p>
                   </div>
+                  <p>
+                    By using STYO, you acknowledge and agree that STYO acts solely as an intermediary platform connecting property seekers with property owners. We do not own, manage, or operate any properties listed on our platform.
+                  </p>
                 </div>
               </section>
 
               <Separator className="bg-white/10" />
 
-              {/* Dispute Clause */}
+              {/* Dispute Resolution Clause */}
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <AlertCircle className="w-6 h-6 text-orange-400" />
+                  <AlertTriangle className="w-6 h-6 text-orange-400" />
                   <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     Dispute Resolution
                   </h2>
                 </div>
                 <div className="space-y-4 text-white/80 leading-relaxed">
                   <div className="bg-orange-600/10 border-2 border-orange-400/30 rounded-xl p-6">
-                    <p className="text-white font-semibold mb-3">
+                    <p className="text-white font-semibold text-lg mb-3">
                       Any disputes, damages, fraud, misrepresentation, or conflicts arising after contact unlock shall be solely between the property owner and the seeker. STYO shall not be liable for such disputes.
                     </p>
-                    <p>
-                      STYO provides a platform for connecting parties but does not mediate, arbitrate, or resolve disputes between users and property owners.
-                    </p>
                   </div>
+                  <p>
+                    STYO provides a platform for connecting parties but does not mediate, arbitrate, or resolve disputes between users and property owners. Users are responsible for resolving any conflicts directly with the other party or through appropriate legal channels.
+                  </p>
+                  <p>
+                    <strong className="text-white">Limitation of Liability:</strong> STYO shall not be held liable for any direct, indirect, incidental, consequential, or punitive damages arising from disputes, transactions, or interactions between users and property owners.
+                  </p>
                 </div>
               </section>
 
               <Separator className="bg-white/10" />
 
-              {/* Refund Policy for ₹99 Unlock Fee */}
+              {/* User Responsibilities */}
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <CreditCard className="w-6 h-6 text-green-400" />
+                  <Users className="w-6 h-6 text-blue-400" />
                   <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    ₹99 Unlock Fee Refund Policy
+                    User Responsibilities
                   </h2>
                 </div>
                 <div className="space-y-4 text-white/80 leading-relaxed">
-                  <p className="text-white font-semibold">
-                    Refund applicable only if:
+                  <p>
+                    By using STYO, you agree to:
                   </p>
-                  <ul className="space-y-3 ml-4">
-                    <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">•</span>
-                      <span><strong className="text-white">Property owner is unreachable within 48 hours</strong> – If you cannot reach the owner through any provided contact method within 48 hours of unlocking</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">•</span>
-                      <span><strong className="text-white">Listing is proven fake after admin verification</strong> – If our admin team verifies that the listing was fraudulent or misrepresented</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">•</span>
-                      <span><strong className="text-white">Duplicate unlock payment due to system error</strong> – If you were charged twice for the same listing due to a technical error</span>
-                    </li>
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Provide accurate and truthful information</li>
+                    <li>Conduct your own due diligence before entering any agreements</li>
+                    <li>Verify property details, ownership, and legal compliance independently</li>
+                    <li>Respect the privacy and rights of other users</li>
+                    <li>Comply with all applicable laws and regulations</li>
+                    <li>Not use the platform for fraudulent or illegal activities</li>
+                    <li>Not misrepresent yourself or your intentions</li>
                   </ul>
-                  <div className="bg-yellow-600/10 border-2 border-yellow-400/30 rounded-xl p-6 mt-6">
-                    <p className="text-white font-semibold text-lg">
-                      Unlock fee is non-refundable in all other cases.
-                    </p>
-                    <p className="mt-2">
-                      This includes but is not limited to: change of mind, property no longer available, dissatisfaction with property details, inability to finalize booking, or any other reason not listed above.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              <Separator className="bg-white/10" />
-
-              {/* Data Privacy Statement */}
-              <section>
-                <div className="flex items-center gap-3 mb-4">
-                  <Lock className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    Data Privacy
-                  </h2>
-                </div>
-                <div className="space-y-4 text-white/80 leading-relaxed">
-                  <div className="bg-blue-600/10 border-2 border-blue-400/30 rounded-xl p-6">
-                    <p className="mb-3">
-                      <strong className="text-white">User contact details are shared only after successful unlock payment.</strong> STYO does not sell or share personal data with third parties without user consent, except where required by law.
-                    </p>
-                    <p>
-                      We are committed to protecting your privacy and maintaining the confidentiality of your personal information. Your data is used solely for facilitating connections between property seekers and owners.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              <Separator className="bg-white/10" />
-
-              {/* Booking Policy */}
-              <section>
-                <div className="flex items-center gap-3 mb-4">
-                  <Shield className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    Booking Policy
-                  </h2>
-                </div>
-                <div className="space-y-4 text-white/80 leading-relaxed">
                   <p>
-                    <strong className="text-white">STYO</strong> is a platform that connects property seekers with property owners. We facilitate the discovery and initial contact between parties but do not directly manage bookings, payments, or property operations.
+                    <strong className="text-white">Property Owners:</strong> If you list a property, you warrant that you have the legal right to do so and that all information provided is accurate and up-to-date.
                   </p>
                   <p>
-                    When you pay the <strong className="text-blue-300">₹99 unlock fee</strong>, you gain access to the property owner's verified contact details. All subsequent negotiations, agreements, and payments are made directly between you and the property owner.
-                  </p>
-                  <p>
-                    <strong className="text-white">Important:</strong> STYO does not hold, process, or manage any booking deposits, advance payments, or rental amounts. These transactions occur independently between you and the property owner.
+                    <strong className="text-white">Property Seekers:</strong> You are responsible for verifying all property details, conducting inspections, and ensuring any agreements meet your requirements before committing.
                   </p>
                 </div>
               </section>
 
               <Separator className="bg-white/10" />
 
-              {/* Why do I pay a booking token? */}
+              {/* Platform Services */}
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <HelpCircle className="w-6 h-6 text-cyan-400" />
+                  <Scale className="w-6 h-6 text-purple-400" />
                   <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    Why do I pay a booking token?
+                    Platform Services
                   </h2>
                 </div>
                 <div className="space-y-4 text-white/80 leading-relaxed">
                   <p>
-                    Great question! The <strong className="text-blue-300">₹99 unlock fee</strong> serves multiple important purposes:
+                    STYO provides the following services:
                   </p>
-                  <div className="bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 space-y-3">
-                    <p>
-                      <strong className="text-blue-300">1. Serious Inquiries Only:</strong> This small fee ensures that only genuinely interested users contact property owners, saving everyone's time and reducing spam.
-                    </p>
-                    <p>
-                      <strong className="text-blue-300">2. Owner Privacy Protection:</strong> It prevents mass collection of owner contact details by competitors or spammers.
-                    </p>
-                    <p>
-                      <strong className="text-blue-300">3. Platform Maintenance:</strong> The fee helps us maintain and improve STYO, verify listings, and provide quality service.
-                    </p>
-                    <p>
-                      <strong className="text-blue-300">4. Quality Assurance:</strong> It allows us to invest in better verification processes and customer support.
-                    </p>
-                  </div>
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>A digital platform for listing and discovering properties</li>
+                    <li>Verification of property owner contact information</li>
+                    <li>Facilitation of initial contact between seekers and owners</li>
+                    <li>Processing of unlock fees for contact information access</li>
+                  </ul>
                   <p>
-                    Think of it as a <strong className="text-white">commitment fee</strong> – you only pay when you're serious about a property, and in return, you get direct access to verified owner details without any middleman markup on the actual rental price.
+                    <strong className="text-white">What STYO Does NOT Provide:</strong>
                   </p>
-                  <p className="text-green-300 font-semibold">
-                    💡 Pro Tip: Browse all property details for FREE before deciding to unlock. Only pay the ₹99 when you're ready to contact the owner!
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Property management or brokerage services</li>
+                    <li>Guarantees regarding property condition, availability, or pricing</li>
+                    <li>Legal advice or contract mediation</li>
+                    <li>Payment processing for bookings, deposits, or rentals</li>
+                    <li>Dispute resolution or arbitration services</li>
+                    <li>Property inspections or quality assessments</li>
+                  </ul>
+                </div>
+              </section>
+
+              <Separator className="bg-white/10" />
+
+              {/* Intellectual Property */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <Shield className="w-6 h-6 text-green-400" />
+                  <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Intellectual Property
+                  </h2>
+                </div>
+                <div className="space-y-4 text-white/80 leading-relaxed">
+                  <p>
+                    All content, trademarks, logos, and intellectual property on the STYO platform are owned by STYO or its licensors. Users may not copy, reproduce, distribute, or create derivative works without explicit permission.
+                  </p>
+                  <p>
+                    By submitting content (such as property listings or reviews), you grant STYO a non-exclusive, worldwide license to use, display, and distribute that content on our platform.
+                  </p>
+                </div>
+              </section>
+
+              <Separator className="bg-white/10" />
+
+              {/* Termination */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle className="w-6 h-6 text-yellow-400" />
+                  <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Termination
+                  </h2>
+                </div>
+                <div className="space-y-4 text-white/80 leading-relaxed">
+                  <p>
+                    STYO reserves the right to suspend or terminate user accounts at any time for violations of these terms, fraudulent activity, or any behavior that compromises the integrity of the platform.
+                  </p>
+                  <p>
+                    Users may terminate their accounts at any time by contacting support. Termination does not entitle users to refunds for previously paid unlock fees.
+                  </p>
+                </div>
+              </section>
+
+              <Separator className="bg-white/10" />
+
+              {/* Changes to Terms */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="w-6 h-6 text-cyan-400" />
+                  <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Changes to Terms
+                  </h2>
+                </div>
+                <div className="space-y-4 text-white/80 leading-relaxed">
+                  <p>
+                    STYO reserves the right to modify these Terms & Conditions at any time. Users will be notified of significant changes via email or platform notifications. Continued use of the platform after changes constitutes acceptance of the updated terms.
                   </p>
                 </div>
               </section>
@@ -227,7 +235,7 @@ export default function BookingPolicyPage() {
               <section className="mt-12 pt-8 border-t border-white/10">
                 <div className="text-center space-y-4">
                   <p className="text-white/70">
-                    Questions about our policies? Contact us at:
+                    Questions about our terms? Contact us at:
                   </p>
                   <a 
                     href="mailto:support@styo.in" 

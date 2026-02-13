@@ -271,6 +271,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(AdminNotification)],
       ['query'],
     ),
+  'getAllListingsForReview' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
   'getAvailability' : IDL.Func(
       [IDL.Nat],
       [IDL.Opt(AvailabilityStatus)],
@@ -296,6 +297,11 @@ export const idlService = IDL.Service({
   'getLeadAnalytics' : IDL.Func([], [IDL.Vec(LeadView)], ['query']),
   'getListing' : IDL.Func([IDL.Nat], [IDL.Opt(Listing)], ['query']),
   'getListings' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
+  'getListingsByApprovalStatus' : IDL.Func(
+      [ApprovalStatus],
+      [IDL.Vec(Listing)],
+      ['query'],
+    ),
   'getListingsByCategory' : IDL.Func(
       [ListingCategory],
       [IDL.Vec(Listing)],
@@ -608,6 +614,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(AdminNotification)],
         ['query'],
       ),
+    'getAllListingsForReview' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
     'getAvailability' : IDL.Func(
         [IDL.Nat],
         [IDL.Opt(AvailabilityStatus)],
@@ -633,6 +640,11 @@ export const idlFactory = ({ IDL }) => {
     'getLeadAnalytics' : IDL.Func([], [IDL.Vec(LeadView)], ['query']),
     'getListing' : IDL.Func([IDL.Nat], [IDL.Opt(Listing)], ['query']),
     'getListings' : IDL.Func([], [IDL.Vec(Listing)], ['query']),
+    'getListingsByApprovalStatus' : IDL.Func(
+        [ApprovalStatus],
+        [IDL.Vec(Listing)],
+        ['query'],
+      ),
     'getListingsByCategory' : IDL.Func(
         [ListingCategory],
         [IDL.Vec(Listing)],

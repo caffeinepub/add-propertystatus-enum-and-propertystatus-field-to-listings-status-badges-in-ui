@@ -15,9 +15,7 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import Stripe "stripe/Stripe";
 import StripeMixin "stripe/StripeMixin";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -313,6 +311,23 @@ actor {
 
   let UNDER_CONFIRMATION_TIMEOUT : Int = 24 * 60 * 60 * 1_000_000_000; // 24 hours in nanoseconds
 
+  // Helper function to filter approved listings for non-admin users
+  func filterApprovedListings(caller : Principal, listingsArray : [Listing]) : [Listing] {
+    if (AccessControl.isAdmin(accessControlState, caller)) {
+      // Admins can see all listings
+      return listingsArray;
+    };
+    // Non-admins only see approved listings
+    listingsArray.filter(func(l) { l.approvalStatus == #approved });
+  };
+
+  // Helper function to check if listing is approved (for operations)
+  func requireApprovedListing(listing : Listing) {
+    if (listing.approvalStatus != #approved) {
+      Runtime.trap("Listing must be approved before this action can be performed");
+    };
+  };
+
   // Helper function to process expired underConfirmation listings
   func processExpiredConfirmations() {
     let now = Time.now();
@@ -401,76 +416,138 @@ actor {
   };
 
   public query ({ caller }) func getListings() : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).sort();
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).sort();
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getListingsByCategory(category : ListingCategory) : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).filter(
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).filter(
       func(l) { l.category == category }
     );
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getListing(id : Nat) : async ?Listing {
-    switch (listings.get(id)) {
+    let listing = switch (listings.get(id)) {
       case (?listing) { ?listing };
       case (null) { demoListings.get(id) };
+    };
+    
+    switch (listing) {
+      case (?l) {
+        // Admins and owners can see their own listings regardless of approval status
+        if (AccessControl.isAdmin(accessControlState, caller) or l.owner == caller) {
+          ?l;
+        } else if (l.approvalStatus == #approved) {
+          ?l;
+        } else {
+          null;
+        };
+      };
+      case (null) { null };
     };
   };
 
   public query ({ caller }) func getAvailableListings() : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).filter(
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).filter(
       func(l) { l.availability.status != #booked }
     );
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getVerifiedListings() : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).filter(
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).filter(
       func(l) { l.verified }
     );
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getFeaturedListings() : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).filter(
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).filter(
       func(l) { l.featured }
     );
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getListingsByLocation(lat : Float, lon : Float, radius : ?Float) : async [Listing] {
-    listings.values().toArray().concat(demoListings.values().toArray()).filter(
+    let allListings = listings.values().toArray().concat(demoListings.values().toArray()).filter(
       func(l) { true }
     );
+    filterApprovedListings(caller, allListings);
   };
 
   public query ({ caller }) func getAvailability(id : Nat) : async ?AvailabilityStatus {
-    switch (listings.get(id)) {
-      case (?listing) { ?listing.availability };
+    let listing = switch (listings.get(id)) {
+      case (?listing) { ?listing };
       case (null) {
         switch (demoListings.get(id)) {
-          case (?demoListing) { ?demoListing.availability };
+          case (?demoListing) { ?demoListing };
           case (null) { null };
         };
       };
     };
+
+    switch (listing) {
+      case (?l) {
+        // Check approval status unless admin or owner
+        if (AccessControl.isAdmin(accessControlState, caller) or l.owner == caller or l.approvalStatus == #approved) {
+          ?l.availability;
+        } else {
+          null;
+        };
+      };
+      case (null) { null };
+    };
   };
 
   public query ({ caller }) func getReviewsForListing(listingId : Nat) : async [Review] {
-    reviews.values().toArray().filter(
-      func(review) { review.listingId == listingId }
-    );
+    // Only show reviews for approved listings (unless admin)
+    let listing = switch (listings.get(listingId)) {
+      case (?l) { ?l };
+      case (null) { demoListings.get(listingId) };
+    };
+
+    switch (listing) {
+      case (?l) {
+        if (AccessControl.isAdmin(accessControlState, caller) or l.approvalStatus == #approved) {
+          reviews.values().toArray().filter(
+            func(review) { review.listingId == listingId }
+          );
+        } else {
+          [];
+        };
+      };
+      case (null) { [] };
+    };
   };
 
   public query ({ caller }) func getAverageRating(listingId : Nat) : async ?Float {
-    let listingReviews = reviews.values().toArray().filter(
-      func(review) { review.listingId == listingId }
-    );
-    if (listingReviews.size() == 0) {
-      return null;
+    // Only calculate rating for approved listings (unless admin)
+    let listing = switch (listings.get(listingId)) {
+      case (?l) { ?l };
+      case (null) { demoListings.get(listingId) };
     };
-    var total : Nat = 0;
-    for (review in listingReviews.values()) {
-      total += review.rating;
+
+    switch (listing) {
+      case (?l) {
+        if (not (AccessControl.isAdmin(accessControlState, caller) or l.approvalStatus == #approved)) {
+          return null;
+        };
+
+        let listingReviews = reviews.values().toArray().filter(
+          func(review) { review.listingId == listingId }
+        );
+        if (listingReviews.size() == 0) {
+          return null;
+        };
+        var total : Nat = 0;
+        for (review in listingReviews.values()) {
+          total += review.rating;
+        };
+        ?(total.toFloat() / listingReviews.size().toFloat());
+      };
+      case (null) { null };
     };
-    ?(total.toFloat() / listingReviews.size().toFloat());
   };
 
   public shared ({ caller }) func addReview(listingId : Nat, rating : Nat, comment : Text) : async Nat {
@@ -482,34 +559,35 @@ actor {
       Runtime.trap("Rating must be between 1 and 5");
     };
 
-    let listingExists = switch (listings.get(listingId)) {
-      case (?_) { true };
-      case (null) {
-        switch (demoListings.get(listingId)) {
-          case (?_) { true };
-          case (null) { false };
+    let listing = switch (listings.get(listingId)) {
+      case (?l) { ?l };
+      case (null) { demoListings.get(listingId) };
+    };
+
+    switch (listing) {
+      case (?l) {
+        // Can only review approved listings
+        requireApprovedListing(l);
+
+        let reviewId = reviewIdCounter;
+        reviewIdCounter += 1;
+
+        let newReview : Review = {
+          id = reviewId;
+          listingId;
+          reviewer = caller;
+          rating;
+          comment;
+          createdAt = Time.now();
         };
+
+        reviews.add(reviewId, newReview);
+        reviewId;
+      };
+      case (null) {
+        Runtime.trap("Listing not found");
       };
     };
-
-    if (not listingExists) {
-      Runtime.trap("Listing not found");
-    };
-
-    let reviewId = reviewIdCounter;
-    reviewIdCounter += 1;
-
-    let newReview : Review = {
-      id = reviewId;
-      listingId;
-      reviewer = caller;
-      rating;
-      comment;
-      createdAt = Time.now();
-    };
-
-    reviews.add(reviewId, newReview);
-    reviewId;
   };
 
   public query ({ caller }) func getEventMarkers() : async [EventMarker] {
@@ -521,37 +599,38 @@ actor {
       Runtime.trap("Unauthorized: Only authenticated users can create bookings");
     };
 
-    let listingExists = switch (listings.get(_listingId)) {
-      case (?_) { true };
-      case (null) {
-        switch (demoListings.get(_listingId)) {
-          case (?_) { true };
-          case (null) { false };
+    let listing = switch (listings.get(_listingId)) {
+      case (?l) { ?l };
+      case (null) { demoListings.get(_listingId) };
+    };
+
+    switch (listing) {
+      case (?l) {
+        // Can only book approved listings
+        requireApprovedListing(l);
+
+        let bookingId = bookingIdCounter;
+        bookingIdCounter += 1;
+
+        let newBooking : Booking = {
+          id = bookingId;
+          listingId = _listingId;
+          user = caller;
+          bookingStage = #viewInfo;
+          checkInDate = _checkInDate;
+          checkOutDate = _checkOutDate;
+          status = #pending;
+          createdAt = Time.now();
+          lastUpdated = Time.now();
         };
+
+        bookings.add(bookingId, newBooking);
+        bookingId;
+      };
+      case (null) {
+        Runtime.trap("Listing not found");
       };
     };
-
-    if (not listingExists) {
-      Runtime.trap("Listing not found");
-    };
-
-    let bookingId = bookingIdCounter;
-    bookingIdCounter += 1;
-
-    let newBooking : Booking = {
-      id = bookingId;
-      listingId = _listingId;
-      user = caller;
-      bookingStage = #viewInfo;
-      checkInDate = _checkInDate;
-      checkOutDate = _checkOutDate;
-      status = #pending;
-      createdAt = Time.now();
-      lastUpdated = Time.now();
-    };
-
-    bookings.add(bookingId, newBooking);
-    bookingId;
   };
 
   public query ({ caller }) func getAvailabilityCounts() : async AvailabilityCounts {
@@ -664,6 +743,9 @@ actor {
         };
       };
     };
+
+    // Can only unlock approved listings
+    requireApprovedListing(listing);
 
     if (listing.owner == caller) {
       Runtime.trap("Unauthorized: Cannot unlock your own listing");
@@ -875,6 +957,9 @@ actor {
 
     switch (validateListingOwner(_listingId, caller)) {
       case (?existingListing) {
+        // Can only update availability for approved listings
+        requireApprovedListing(existingListing);
+
         let wasApproved = existingListing.approvalStatus == #approved and existingListing.verified;
 
         let updatedListing : Listing = {
@@ -922,6 +1007,9 @@ actor {
 
     switch (validateListingOwner(_listingId, caller)) {
       case (?existingListing) {
+        // Can only update property status for approved listings
+        requireApprovedListing(existingListing);
+
         let currentStatus = existingListing.propertyStatus;
         let now = Time.now();
 
@@ -1021,6 +1109,9 @@ actor {
 
         listings.add(_listingId, updatedListing);
         updateCountsOnListingStatus(updatedListing, wasApproved, #approved, updatedListing.verified);
+
+        // Remove from pending submissions if it was a public submission
+        pendingPublicSubmissions.remove(_listingId);
       };
       case (null) {
         Runtime.trap("Listing not found");
@@ -1059,6 +1150,9 @@ actor {
 
         listings.add(_listingId, updatedListing);
         updateCountsOnListingStatus(updatedListing, wasApproved, #rejected, updatedListing.verified);
+
+        // Remove from pending submissions if it was a public submission
+        pendingPublicSubmissions.remove(_listingId);
       };
       case (null) {
         Runtime.trap("Listing not found");
@@ -1238,6 +1332,22 @@ actor {
       Runtime.trap("Unauthorized: Only admins can access pending submissions");
     };
     pendingPublicSubmissions.toArray();
+  };
+
+  // Admin function to get all listings including pending/rejected for review
+  public query ({ caller }) func getAllListingsForReview() : async [Listing] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can access all listings for review");
+    };
+    listings.values().toArray().concat(demoListings.values().toArray()).sort();
+  };
+
+  // Admin function to get listings by approval status
+  public query ({ caller }) func getListingsByApprovalStatus(status : ApprovalStatus) : async [Listing] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can filter by approval status");
+    };
+    listings.values().toArray().filter(func(l) { l.approvalStatus == status });
   };
 
   // AUTHORIZATION: User can update own profile, admin can update any profile

@@ -1,81 +1,97 @@
 {
   "kind": "build_request",
-  "title": "Implement PropertyStatus transition state machine with 24h underConfirmation timeout",
+  "title": "Strengthen Booking Policy/Terms legal text, refund/privacy clauses, update footer links, and verify backend verification/timeout workflows",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Add backend-only PropertyStatus transition logic for listings with exactly these allowed transitions: #available → #visitCompleted, #visitCompleted → #underConfirmation, #underConfirmation → #bookedViaSTYO. Any other transition attempt must be rejected with an English error message.",
-      "target": "backend",
+      "id": "REQ-4",
+      "text": "Update the existing Booking Policy & Terms page content to include stronger legal protection and clarity, including (a) the exact platform disclaimer text provided by the user, (b) the exact dispute/liability clause provided by the user, (c) an updated ₹99 unlock fee refund policy presented in bullet format with exactly the listed refund-eligible conditions and a clear statement that the unlock fee is non-refundable in all other cases, and (d) a data privacy statement covering contact sharing only after successful unlock and no third-party sharing without consent except where required by law. All user-facing text must be in English.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Implement only the propertyStatus transition logic.\n\nRules:\n- #available → #visitCompleted\n- #visitCompleted → #underConfirmation\n- #underConfirmation → #bookedViaSTYO"
+          "Please update the Booking Policy & Terms section with stronger legal protection and clarity.\nAdd this disclaimer clearly:\nSTYO is a digital listing platform and not a real estate broker, agent, or property manager. STYO does not guarantee property condition, legality, availability, pricing accuracy, or transaction completion. All agreements and transactions are solely between the property owner and the seeker.\nAdd dispute clause:\nAny disputes, damages, fraud, misrepresentation, or conflicts arising after contact unlock shall be solely between the property owner and the seeker. STYO shall not be liable for such disputes.\nUpdate refund policy for ₹99 unlock fee clearly in bullet format:\nRefund applicable only if:\nProperty owner is unreachable within 48 hours\nListing is proven fake after admin verification\nDuplicate unlock payment due to system error\nUnlock fee is non-refundable in all other cases.\nAdd data privacy statement:\nUser contact details are shared only after successful unlock payment. STYO does not sell or share personal data with third parties without user consent, except where required by law."
         ]
       },
       "acceptanceCriteria": [
-        "A shared backend method exists to request a propertyStatus transition for a specific listing id.",
-        "When current status is #available, transitioning to #visitCompleted succeeds; transitioning to any other status fails.",
-        "When current status is #visitCompleted, transitioning to #underConfirmation succeeds; transitioning to any other status fails.",
-        "When current status is #underConfirmation, transitioning to #bookedViaSTYO succeeds; transitioning to any other status fails.",
-        "When current status is #bookedViaSTYO, all further transitions are rejected.",
-        "Rejected transitions trap/return an English error message that clearly indicates the transition is invalid."
+        "BookingPolicyPage includes the exact disclaimer text and the exact dispute clause text as provided by the user (verbatim).",
+        "The ₹99 unlock fee refund policy is shown as a bullet list and includes only the three refund-eligible conditions specified by the user, plus a clear statement that all other cases are non-refundable.",
+        "A data privacy statement is present and explicitly states: contact details are shared only after successful unlock payment; STYO does not sell/share personal data with third parties without consent; exception for legal requirements.",
+        "All text added/updated for these sections is in English."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Implement the 24-hour timeout rule for #underConfirmation: if a listing remains in #underConfirmation for more than 24 hours without being transitioned to #bookedViaSTYO, it must automatically revert to #available.",
-      "target": "backend",
+      "id": "REQ-5",
+      "text": "Update the site footer to include and visibly display proper links exactly labeled: \"Privacy Policy\" | \"Terms & Conditions\" | \"Refund Policy\" | \"Contact Email\". Ensure each item navigates to an appropriate route/page (for the three policies) and opens an email link for Contact Email.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "- If not confirmed within 24h → revert to #available"
+          "Ensure footer contains proper links:\nPrivacy Policy | Terms & Conditions | Refund Policy | Contact Email"
         ]
       },
       "acceptanceCriteria": [
-        "The backend persists sufficient data to determine when a listing entered #underConfirmation (without requiring a breaking change to the Listing record schema).",
-        "If a listing is in #underConfirmation and 24 hours have elapsed since it entered that status, the backend reverts it to #available.",
-        "The auto-revert removes/clears any stored underConfirmation timestamp tracking for that listing.",
-        "The auto-revert is applied consistently so that subsequent reads (e.g., getListing/getListings) do not continue to show an expired #underConfirmation status."
+        "Footer displays four items with the exact labels: Privacy Policy, Terms & Conditions, Refund Policy, Contact Email.",
+        "Privacy Policy, Terms & Conditions, and Refund Policy each navigate to a dedicated frontend route/page.",
+        "Contact Email is a mailto link (e.g., mailto:support@styo.in) and is clickable from the footer."
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Enforce authorization rules for propertyStatus transitions so only the listing owner or an admin can advance the propertyStatus for that listing (auto-revert is system-driven).",
+      "id": "REQ-6",
+      "text": "Add dedicated frontend pages/routes for Privacy Policy, Terms & Conditions, and Refund Policy (English text). Ensure these pages include the same updated legal positions requested by the user where relevant (platform disclaimer, dispute clause post-unlock, refund eligibility bullets for ₹99 unlock fee, and the data privacy statement) without contradicting the Booking Policy & Terms page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add this disclaimer clearly: ...",
+          "Add dispute clause: ...",
+          "Update refund policy for ₹99 unlock fee clearly in bullet format: ...",
+          "Add data privacy statement: ...",
+          "Ensure footer contains proper links: Privacy Policy | Terms & Conditions | Refund Policy | Contact Email"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Routes exist for Privacy Policy, Terms & Conditions, and Refund Policy and are reachable via the footer links.",
+        "Refund Policy page presents the ₹99 unlock fee refund eligibility in bullets exactly as specified by the user.",
+        "Privacy Policy page includes the requested data privacy statement as specified by the user.",
+        "Terms & Conditions page includes the requested platform disclaimer and the requested dispute clause as specified by the user."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Verify and, if missing or incomplete, implement the backend admin verification workflow for listings (including public submissions) and the 24-hour under-confirmation timeout logic. Specifically: ensure (a) an admin-only workflow exists to review/approve/reject submitted listings, (b) listing approvalStatus is enforced consistently for actions that require an approved listing, and (c) listings in propertyStatus #underConfirmation automatically revert to #available after 24 hours (system-driven).",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Only implement transition logic."
+          "Also confirm that admin verification workflow and 24-hour under-confirmation timeout logic are properly implemented on backend."
         ]
       },
       "acceptanceCriteria": [
-        "If the caller is neither the listing owner nor an admin, the transition method rejects with an English authorization error.",
-        "If the caller is the listing owner, valid transitions succeed.",
-        "If the caller is an admin, valid transitions succeed.",
-        "Auto-revert does not require a caller action and is not blocked by authorization checks."
+        "Backend provides an admin-only mechanism to review pending submissions and approve or reject them, resulting in a persisted approvalStatus change on the affected listing/submission.",
+        "Backend enforces that actions requiring an approved listing reject non-approved listings (e.g., unlockListing must fail when approvalStatus is not #approved).",
+        "A system-driven process exists that reverts listings from #underConfirmation to #available after 24 hours (based on statusTimestamp) without requiring a manual admin/user action.",
+        "Frontend hook useProcessExpiredListings can call a corresponding backend method without errors (method exists and is callable), or the backend provides an equivalent mechanism that keeps the state correct."
       ]
     }
   ],
   "constraints": [
-    "Do NOT add payment logic yet.",
-    "Do NOT generate dashboards.",
-    "Only implement propertyStatus transition logic and the 24-hour underConfirmation timeout revert.",
-    "Keep backend architecture as a single Motoko actor in backend/main.mo."
+    "Backend must remain a single-actor Motoko canister; place all logic in backend/main.mo (only add backend/migration.mo if an actual stable-state migration is required).",
+    "Do not edit files under frontend/src/components/ui or any other frontend immutablePaths listed in SYSTEM_CONTEXT.",
+    "Use English for all user-facing text added/changed in the UI."
   ],
   "nonGoals": [
-    "Owner/customer confirmation popups UI",
-    "IST owner/customer dashboards",
-    "Booking signal tracking fields beyond what is strictly needed to support the 24-hour underConfirmation timeout",
-    "Commission deduction",
-    "Listing reactivation logic beyond reverting expired underConfirmation back to #available",
-    "Any Stripe/payment integration changes"
+    "Implementing real payment processing or Stripe-based refunds for the ₹99 unlock fee.",
+    "Adding third-party authentication providers (only Internet Identity is supported).",
+    "Introducing external databases or additional backend services."
   ],
   "imageRequirements": {
     "required": [],
