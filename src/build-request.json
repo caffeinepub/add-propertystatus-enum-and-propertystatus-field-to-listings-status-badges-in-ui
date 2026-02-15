@@ -1,100 +1,117 @@
 {
   "kind": "build_request",
-  "title": "Strengthen Booking Policy/Terms legal text, refund/privacy clauses, update footer links, and verify backend verification/timeout workflows",
+  "title": "Implement STYO Tech Neon primary logo assets and modular SVG Verified badge system",
   "priority": "normal",
   "requirements": [
     {
+      "id": "REQ-1",
+      "text": "Generate and add the official STYO primary logo assets using the “Tech Neon” direction: clean modern scalable SVG with a blue-to-purple gradient, subtle depth (not heavy 3D), optimized for dark UI, high contrast, and lightweight for web performance. Deliver full logo (icon + “STYO” text), icon-only, and white monochrome versions, each provided as SVG and transparent PNG.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Primary Logo\nUse the Tech Neon version (blue–purple gradient 3D style) as the official STYO logo.\nClean, modern, scalable SVG\nBlue to purple gradient\nSubtle depth (not heavy 3D render)\nOptimized for dark UI\nHigh contrast\nLightweight for performance\nDeliver:\nFull logo (icon + STYO text)\nIcon only version (for favicon & app icon)\nWhite monochrome version\nTransparent PNG + SVG"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New logo assets exist under frontend/public/assets/generated using the filenames specified in imageRequirements.",
+        "Full logo includes both icon and the text “STYO” and remains legible on dark backgrounds.",
+        "SVGs render correctly at small and large sizes without pixelation and without filter-heavy effects that bloat file size.",
+        "PNG variants have transparent backgrounds."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the app to consistently use the new Tech Neon STYO logo assets in existing UI entry points: header brand image, footer brand image, and SEO/social metadata assets. Replace current references to /assets/generated/styo-logo-transparent.dim_200x80.png with the new full-logo asset, and update favicon usage to the new icon-only asset.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Use the Tech Neon version (blue–purple gradient 3D style) as the official STYO logo.",
+          "Icon only version (for favicon & app icon)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "frontend/src/components/Header.tsx and frontend/src/components/Footer.tsx use the new full-logo asset path(s) under /assets/generated/ and no longer reference /assets/generated/styo-logo-transparent.dim_200x80.png.",
+        "frontend/index.html favicon link uses the new icon-only asset (not the full logo).",
+        "frontend/index.html og:image and twitter:image use an appropriate new logo image (PNG) under /assets/generated/.",
+        "Logo remains crisp on mobile and desktop (no layout shift; responsive sizing preserved)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a reusable SVG-based Gold “Verified” trust badge component (inspired by the gold D concept) with a clean gold gradient, subtle glow (not flashy), and web-performance-friendly SVG markup. The component must be reusable and accept props to support future badge variants (Featured with purple glow tag, Premium with gold outline, Elite with diamond style) without requiring a rewrite.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Trust Badge System\nCreate a reusable Gold “Verified” badge component (inspired by the gold D concept).\nRequirements:\nSVG-based (not raster image)\nReusable component\nDynamically attachable to listings\nClean gold gradient (premium feel)\nSubtle glow, not flashy\nFuture Scalability\nKeep the badge system modular so we can later add:\nFeatured (purple glow tag)\nPremium (gold outline)\nElite (diamond style)\nEverything must be optimized for web performance and mobile responsiveness."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new reusable React component exists (e.g., in frontend/src/components/) that renders the Verified badge as inline SVG (no raster images).",
+        "The component supports common customization via props (at minimum: size and className; plus a variant/type pattern suitable for adding Featured/Premium/Elite later).",
+        "SVG uses a gold gradient and subtle glow effect while remaining lightweight (avoid large embedded bitmaps or excessively complex filters).",
+        "Component is responsive (renders cleanly at small sizes such as within a listing card)."
+      ]
+    },
+    {
       "id": "REQ-4",
-      "text": "Update the existing Booking Policy & Terms page content to include stronger legal protection and clarity, including (a) the exact platform disclaimer text provided by the user, (b) the exact dispute/liability clause provided by the user, (c) an updated ₹99 unlock fee refund policy presented in bullet format with exactly the listed refund-eligible conditions and a clear statement that the unlock fee is non-refundable in all other cases, and (d) a data privacy statement covering contact sharing only after successful unlock and no third-party sharing without consent except where required by law. All user-facing text must be in English.",
+      "text": "Attach the new Gold “Verified” badge component to listings in the UI in a way that is dynamically driven by listing data. Specifically, replace the current “Verified” pill/badge rendering in listing cards with the new SVG badge when listing.verified is true, while keeping layout mobile-responsive and not regressing performance.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Please update the Booking Policy & Terms section with stronger legal protection and clarity.\nAdd this disclaimer clearly:\nSTYO is a digital listing platform and not a real estate broker, agent, or property manager. STYO does not guarantee property condition, legality, availability, pricing accuracy, or transaction completion. All agreements and transactions are solely between the property owner and the seeker.\nAdd dispute clause:\nAny disputes, damages, fraud, misrepresentation, or conflicts arising after contact unlock shall be solely between the property owner and the seeker. STYO shall not be liable for such disputes.\nUpdate refund policy for ₹99 unlock fee clearly in bullet format:\nRefund applicable only if:\nProperty owner is unreachable within 48 hours\nListing is proven fake after admin verification\nDuplicate unlock payment due to system error\nUnlock fee is non-refundable in all other cases.\nAdd data privacy statement:\nUser contact details are shared only after successful unlock payment. STYO does not sell or share personal data with third parties without user consent, except where required by law."
+          "Dynamically attachable to listings",
+          "This will be used for: Verified Listings"
         ]
       },
       "acceptanceCriteria": [
-        "BookingPolicyPage includes the exact disclaimer text and the exact dispute clause text as provided by the user (verbatim).",
-        "The ₹99 unlock fee refund policy is shown as a bullet list and includes only the three refund-eligible conditions specified by the user, plus a clear statement that all other cases are non-refundable.",
-        "A data privacy statement is present and explicitly states: contact details are shared only after successful unlock payment; STYO does not sell/share personal data with third parties without consent; exception for legal requirements.",
-        "All text added/updated for these sections is in English."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Update the site footer to include and visibly display proper links exactly labeled: \"Privacy Policy\" | \"Terms & Conditions\" | \"Refund Policy\" | \"Contact Email\". Ensure each item navigates to an appropriate route/page (for the three policies) and opens an email link for Contact Email.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Ensure footer contains proper links:\nPrivacy Policy | Terms & Conditions | Refund Policy | Contact Email"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Footer displays four items with the exact labels: Privacy Policy, Terms & Conditions, Refund Policy, Contact Email.",
-        "Privacy Policy, Terms & Conditions, and Refund Policy each navigate to a dedicated frontend route/page.",
-        "Contact Email is a mailto link (e.g., mailto:support@styo.in) and is clickable from the footer."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Add dedicated frontend pages/routes for Privacy Policy, Terms & Conditions, and Refund Policy (English text). Ensure these pages include the same updated legal positions requested by the user where relevant (platform disclaimer, dispute clause post-unlock, refund eligibility bullets for ₹99 unlock fee, and the data privacy statement) without contradicting the Booking Policy & Terms page.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Add this disclaimer clearly: ...",
-          "Add dispute clause: ...",
-          "Update refund policy for ₹99 unlock fee clearly in bullet format: ...",
-          "Add data privacy statement: ...",
-          "Ensure footer contains proper links: Privacy Policy | Terms & Conditions | Refund Policy | Contact Email"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Routes exist for Privacy Policy, Terms & Conditions, and Refund Policy and are reachable via the footer links.",
-        "Refund Policy page presents the ₹99 unlock fee refund eligibility in bullets exactly as specified by the user.",
-        "Privacy Policy page includes the requested data privacy statement as specified by the user.",
-        "Terms & Conditions page includes the requested platform disclaimer and the requested dispute clause as specified by the user."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Verify and, if missing or incomplete, implement the backend admin verification workflow for listings (including public submissions) and the 24-hour under-confirmation timeout logic. Specifically: ensure (a) an admin-only workflow exists to review/approve/reject submitted listings, (b) listing approvalStatus is enforced consistently for actions that require an approved listing, and (c) listings in propertyStatus #underConfirmation automatically revert to #available after 24 hours (system-driven).",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Also confirm that admin verification workflow and 24-hour under-confirmation timeout logic are properly implemented on backend."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend provides an admin-only mechanism to review pending submissions and approve or reject them, resulting in a persisted approvalStatus change on the affected listing/submission.",
-        "Backend enforces that actions requiring an approved listing reject non-approved listings (e.g., unlockListing must fail when approvalStatus is not #approved).",
-        "A system-driven process exists that reverts listings from #underConfirmation to #available after 24 hours (based on statusTimestamp) without requiring a manual admin/user action.",
-        "Frontend hook useProcessExpiredListings can call a corresponding backend method without errors (method exists and is callable), or the backend provides an equivalent mechanism that keeps the state correct."
+        "In frontend/src/components/ListingCard.tsx, when listing.verified is true, the UI displays the new SVG Gold Verified badge instead of (or in place of) the existing green “Verified” pill at the top-left of the image area.",
+        "The listing card remains visually balanced on small screens (badge does not overflow or cover critical content).",
+        "No backend changes are required to render the badge; it uses existing listing.verified data."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko canister; place all logic in backend/main.mo (only add backend/migration.mo if an actual stable-state migration is required).",
-    "Do not edit files under frontend/src/components/ui or any other frontend immutablePaths listed in SYSTEM_CONTEXT.",
-    "Use English for all user-facing text added/changed in the UI."
+    "Frontend must not modify any files under frontend/src/components/ui or any paths listed in frontend.immutablePaths.",
+    "Keep all changes compatible with the existing React + TypeScript + Tailwind + React Query stack.",
+    "Do not introduce raster images for the trust badge; it must be SVG-based."
   ],
   "nonGoals": [
-    "Implementing real payment processing or Stripe-based refunds for the ₹99 unlock fee.",
-    "Adding third-party authentication providers (only Internet Identity is supported).",
-    "Introducing external databases or additional backend services."
+    "Do not implement third-party brand services, CDN hosting, or external asset pipelines.",
+    "Do not add new backend fields or workflows for premium/elite/featured badges beyond preparing the frontend component API for future variants.",
+    "Do not redesign unrelated parts of the UI outside swapping logo usage points and adding the verified badge component."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "STYO full logo (icon + STYO text), tech neon blue-to-purple gradient with subtle depth, dark-background optimized (styo-logo-tech-neon-full.dim_1200x400.svg)",
+      "STYO full logo (icon + STYO text), tech neon blue-to-purple gradient with subtle depth, transparent background (styo-logo-tech-neon-full.dim_1200x400.png)",
+      "STYO icon-only logo mark, tech neon blue-to-purple gradient with subtle depth, transparent background (styo-logo-tech-neon-icon.dim_512x512.svg)",
+      "STYO icon-only logo mark, tech neon blue-to-purple gradient with subtle depth, transparent background (styo-logo-tech-neon-icon.dim_512x512.png)",
+      "STYO full logo (icon + STYO text) white monochrome, transparent background (styo-logo-white-full.dim_1200x400.svg)",
+      "STYO full logo (icon + STYO text) white monochrome, transparent background (styo-logo-white-full.dim_1200x400.png)",
+      "STYO icon-only logo mark white monochrome, transparent background (styo-logo-white-icon.dim_512x512.svg)",
+      "STYO icon-only logo mark white monochrome, transparent background (styo-logo-white-icon.dim_512x512.png)"
+    ],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

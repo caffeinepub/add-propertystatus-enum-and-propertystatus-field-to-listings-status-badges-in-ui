@@ -3,9 +3,10 @@ import { useNavigate } from '@tanstack/react-router';
 import { Listing, Variant_partiallyAvailable_booked_available, ListingCategory } from '../backend';
 import { useGetAverageRating, useGetReviewsForListing } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
-import { MapPin, CheckCircle2, Star, MessageSquare, Building2, Home, PartyPopper, Phone, Shield, Hotel } from 'lucide-react';
+import { MapPin, Star, MessageSquare, Building2, Home, PartyPopper, Phone, Shield, Hotel } from 'lucide-react';
 import StarRating from './StarRating';
 import PropertyStatusBadge from './PropertyStatusBadge';
+import TrustBadge from './TrustBadge';
 
 interface ListingCardProps {
   listing: Listing;
@@ -114,112 +115,79 @@ const ListingCard = memo(({ listing, variant = 'glassmorphism' }: ListingCardPro
             />
           </picture>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-600" />
-        )}
-        
-        {/* Soft gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-        {/* Availability Badge */}
-        <div className={`absolute top-4 right-4 ${getAvailabilityColor()} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg flex items-center gap-2`}>
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          {getAvailabilityText()}
-        </div>
-
-        {/* Verified Badge */}
-        {listing.verified && (
-          <div className="absolute top-4 left-4 bg-green-600 text-white px-2 sm:px-3 py-1 rounded-full font-bold text-xs shadow-lg flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" />
-            Verified
+          <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            {getCategoryIcon()}
           </div>
         )}
 
-        {/* Featured Badge */}
+        {/* Verified Badge - Top Left */}
+        {listing.verified && (
+          <div className="absolute top-3 left-3 z-10">
+            <TrustBadge variant="verified" size="sm" />
+          </div>
+        )}
+
+        {/* Availability Badge - Top Right */}
+        <div className="absolute top-3 right-3 z-10">
+          <div className={`px-3 py-1 rounded-full text-xs font-bold text-white ${getAvailabilityColor()} backdrop-blur-sm`}>
+            {getAvailabilityText()}
+          </div>
+        </div>
+
+        {/* Featured Badge - Bottom Left (if featured) */}
         {listing.featured && (
-          <div className="absolute bottom-4 left-4 bg-yellow-600 text-white px-2 sm:px-3 py-1 rounded-full font-bold text-xs shadow-lg flex items-center gap-1">
-            <Star className="w-3 h-3 fill-white" />
-            Featured
+          <div className="absolute bottom-3 left-3 z-10">
+            <TrustBadge variant="featured" size="sm" />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        {/* Title */}
+        <h3 className={`text-xl font-bold mb-2 line-clamp-1 ${getTextColor()}`}>
+          {listing.title}
+        </h3>
+
+        {/* Location */}
+        <div className={`flex items-center gap-2 mb-3 ${getSecondaryTextColor()}`}>
+          <MapPin className="w-4 h-4 flex-shrink-0" />
+          <span className="text-sm line-clamp-1">{listing.location.address}</span>
+        </div>
+
+        {/* Rating & Reviews */}
+        {displayRating > 0 && (
+          <div className="flex items-center gap-3 mb-3">
+            <StarRating rating={displayRating} size="sm" />
+            <div className={`flex items-center gap-1 text-sm ${getSecondaryTextColor()}`}>
+              <MessageSquare className="w-4 h-4" />
+              <span>{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</span>
+            </div>
           </div>
         )}
 
         {/* Property Status Badge */}
-        <div className="absolute bottom-4 right-4">
-          <PropertyStatusBadge status={listing.propertyStatus} className="text-xs shadow-lg" />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-4 sm:p-6">
-        {/* Title and Rating Row */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-start gap-2 flex-1">
-            <div className={`${getIconColor()} mt-1`}>
-              {getCategoryIcon()}
-            </div>
-            <h3 className={`${getTextColor()} font-bold text-lg sm:text-xl line-clamp-1 flex-1`}>
-              {listing.title}
-            </h3>
-          </div>
-          {displayRating > 0 && (
-            <div className="flex items-center gap-1 ml-2">
-              <StarRating rating={displayRating} size="sm" />
-              <span className={`${getSecondaryTextColor()} text-xs sm:text-sm font-semibold ml-1`}>
-                {displayRating.toFixed(1)}
-              </span>
-            </div>
-          )}
+        <div className="mb-3">
+          <PropertyStatusBadge status={listing.propertyStatus} />
         </div>
 
-        {/* Trust Badges Row */}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <div className={`flex items-center gap-1 ${variant === 'neumorphism' ? 'bg-green-100 text-green-700' : 'bg-green-600/20 text-green-400'} px-2 py-1 rounded-full text-xs font-medium`}>
-            <CheckCircle2 className="w-3 h-3" />
-            <span>Verified Listing</span>
-          </div>
-          <div className={`flex items-center gap-1 ${variant === 'neumorphism' ? 'bg-blue-100 text-blue-700' : 'bg-blue-600/20 text-blue-400'} px-2 py-1 rounded-full text-xs font-medium`}>
-            <Shield className="w-3 h-3" />
-            <span>Number Hidden</span>
-          </div>
-          <div className={`flex items-center gap-1 ${variant === 'neumorphism' ? 'bg-purple-100 text-purple-700' : 'bg-purple-600/20 text-purple-400'} px-2 py-1 rounded-full text-xs font-medium`}>
-            <Phone className="w-3 h-3" />
-            <span>Secure Call via Platform</span>
-          </div>
-        </div>
-
-        {/* Review Count */}
-        {reviewCount > 0 && (
-          <div className={`flex items-center gap-1 ${getSecondaryTextColor()} text-xs mb-2`}>
-            <MessageSquare className="w-3 h-3" />
-            <span>{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</span>
-          </div>
-        )}
-
-        <p className={`${getSecondaryTextColor()} text-sm mb-4 line-clamp-2`}>
-          {listing.description}
-        </p>
-        
-        <div className={`flex items-center gap-2 ${getSecondaryTextColor()} text-sm mb-4`}>
-          <MapPin className="w-4 h-4 flex-shrink-0" />
-          <span className="line-clamp-1">{listing.location.address}</span>
-        </div>
-
-        {/* Price and CTA */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Price & CTA */}
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
           <div>
-            <span className={`${getSecondaryTextColor()} text-xs sm:text-sm`}>From</span>
-            <div className={`${getTextColor()} font-bold text-xl sm:text-2xl`}>
-              ₹{listing.pricePerDay.toString()}
+            <div className={`text-2xl font-bold ${getTextColor()}`}>
+              ₹{Number(listing.pricePerDay).toLocaleString('en-IN')}
             </div>
-            <span className={`${getSecondaryTextColor()} text-xs`}>per day</span>
+            <div className={`text-xs ${getSecondaryTextColor()}`}>per day</div>
           </div>
-
           <Button
             onClick={handleViewDetails}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+            className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
+              variant === 'neumorphism'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
+                : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-glow-blue'
+            }`}
           >
-            <Phone className="w-4 h-4" />
-            <span className="hidden sm:inline">Call to Check Availability</span>
-            <span className="sm:hidden">Call Now</span>
+            View Details
           </Button>
         </div>
       </div>

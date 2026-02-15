@@ -1,66 +1,96 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T22:54:48.525Z",
-  "summary": "Frontend adds new Privacy/Terms/Refund pages and routes, and updates the footer with the requested legal links and mailto contact. However, the diff does not provide evidence that the Booking Policy/Terms and Terms & Conditions pages include the user-provided disclaimer/dispute clauses verbatim or that the ₹99 refund eligibility bullets match exactly the specified conditions. Backend changes are truncated and do not show the required admin verification workflow, approval enforcement, or the system-driven 24h under-confirmation reversion. Additionally, Stripe/payment-related backend code appears introduced despite being a non-goal.",
+  "generatedAt": "2026-02-14T23:28:11.558Z",
+  "summary": "Implemented new TrustBadge SVG component and updated Header/Footer and index.html to reference new STYO Tech Neon logo asset paths. However, the diff summary does not show the actual logo asset files being added under frontend/public/assets/generated, and several unrelated UI/routes/hooks/config changes appear to be included beyond the requested scope.",
   "missing_requirements": [
     {
-      "id": "REQ-4",
-      "requirement": "Booking Policy & Terms page must include the exact platform disclaimer text and exact dispute/liability clause text provided by the user (verbatim), plus the ₹99 unlock fee refund policy as a bullet list with exactly the three refund-eligible conditions specified by the user and a clear non-refundable otherwise statement, plus a data privacy statement (English).",
-      "reason": "The BookingPolicyPage and TermsConditionsPage show disclaimer/disclaimer-like text, but there is no evidence it matches the user-provided text verbatim. The dispute clause section is truncated and cannot be verified. The refund eligibility bullets/conditions are truncated and cannot be confirmed to match exactly the three specified conditions. The BookingPolicyPage snippet does not show the required privacy statement (may exist later, but not evidenced).",
+      "id": "REQ-1",
+      "requirement": "Generate and add the official STYO primary logo assets (Tech Neon full + icon-only + white monochrome), each as SVG and transparent PNG, under frontend/public/assets/generated using the specified filenames.",
+      "reason": "The diff summary shows code referencing the new filenames/paths, but no added files under frontend/public/assets/generated are included in the diff summary. Only a TSX component file is shown as added.",
       "evidence": [
-        "frontend/src/pages/BookingPolicyPage.tsx",
-        "frontend/src/pages/TermsConditionsPage.tsx",
-        "frontend/src/pages/RefundPolicyPage.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Dedicated Privacy Policy, Terms & Conditions, and Refund Policy pages/routes must include the same updated legal positions where relevant (verbatim disclaimer + dispute clause; exact ₹99 refund bullets; specified privacy statement) without contradicting the Booking Policy & Terms page.",
-      "reason": "Routes/pages exist, and PrivacyPolicyPage includes the requested privacy statement language, but there is no evidence the Terms & Conditions page contains the user-provided disclaimer/dispute clauses verbatim, and the Refund Policy page’s bullet conditions are truncated so exactness cannot be verified.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/PrivacyPolicyPage.tsx",
-        "frontend/src/pages/TermsConditionsPage.tsx",
-        "frontend/src/pages/RefundPolicyPage.tsx"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "requirement": "Backend must provide an admin-only review/approve/reject workflow for listing submissions with persisted approvalStatus changes, enforce approvalStatus for actions requiring approved listings (e.g., unlockListing fails if not approved), and implement a system-driven 24-hour auto-revert from #underConfirmation to #available.",
-      "reason": "backend/main.mo is heavily truncated; while ApprovalStatus/PropertyStatus/statusTimestamp types exist, there is no visible evidence of (a) admin-only approval/rejection endpoints, (b) enforcement checks (e.g., unlockListing gating on approvalStatus), or (c) a system-driven 24h expiry process (e.g., heartbeat/timer + processExpiredConfirmations). The diff summary mentions a frontend hook useProcessExpiredListings, but the corresponding backend callable method is not evidenced.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend-file-summaries.txt"
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/Footer.tsx",
+        "frontend/index.html",
+        "<file-diff>: ADDED FILES only lists frontend/src/components/TrustBadge.tsx (no assets listed)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Stripe/payment integration code added to the backend (Stripe imports and mixins).",
-      "reason": "The BuildRequest explicitly lists implementing real payment processing or Stripe-based refunds as a non-goal, yet backend/main.mo includes Stripe and StripeMixin initialization.",
+      "description": "Added new application routes/pages for Privacy Policy, Terms & Conditions, and Refund Policy.",
+      "reason": "Not requested by REQ-1..REQ-4; explicitly out of scope aside from logo swap points and adding verified badge component.",
       "evidence": [
-        "backend/main.mo"
+        "frontend-file-summaries.txt (frontend/src/App.tsx summary)"
       ]
     },
     {
-      "description": "Large-scale frontend visual/UX redesign work (hero parallax, premium landing page redesign, listing card variants, map explore section, etc.) unrelated to the requested legal pages/footer/backend verification tasks.",
-      "reason": "The BuildRequest focuses on legal text/pages, footer links, and backend verification/timeout workflows; the diff summary indicates extensive additional UI/animation/design changes beyond that scope.",
+      "description": "Redesigned/optimized HomePage and BookingSteps with new Step 3 content and CTAs, plus additional trust indicators.",
+      "reason": "UI redesign beyond swapping logo usage points and adding the verified badge component was a stated non-goal.",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt (frontend/src/pages/HomePage.tsx summary)",
+        "frontend-file-summaries.txt (frontend/src/components/BookingSteps.tsx summary)"
+      ]
+    },
+    {
+      "description": "Major HeroSection visual redesign (parallax backdrop, 3D category boxes, animated map, glowing CTAs).",
+      "reason": "Unrelated UI redesign not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/HeroSection.tsx summary)"
+      ]
+    },
+    {
+      "description": "Added/changed category grid content and presentation (7 category cards with hover effects and gradient overlays).",
+      "reason": "Not requested; outside logo/badge scope.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/CategoryGrid.tsx summary)"
+      ]
+    },
+    {
+      "description": "FeaturedListings behavior change to cycle through three card design variants.",
+      "reason": "Not requested; outside logo/badge scope.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/FeaturedListings.tsx summary)"
+      ]
+    },
+    {
+      "description": "ExploreSection updated to include additional trust badges (e.g., “PG found in 24h, Verified & Trusted”).",
+      "reason": "Not requested; only ListingCard verified badge replacement was requested.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/ExploreSection.tsx summary)"
+      ]
+    },
+    {
+      "description": "ProfileSetupModal updated to include additional UserProfile fields (registrationDate, lastLogin, ipAddress) with defaults.",
+      "reason": "Not requested and contradicts the general constraint of no backend field/workflow additions (even if frontend-only, it’s unrelated to the requested work).",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/ProfileSetupModal.tsx summary)"
+      ]
+    },
+    {
+      "description": "Added/expanded React Query hooks for property status transitions and expired listing cleanup (useUpdatePropertyStatus/useProcessExpiredListings).",
+      "reason": "Not requested; outside logo/badge scope.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/hooks/useQueries.ts summary)"
+      ]
+    },
+    {
+      "description": "Changed global CSS for animations/performance/accessibility and updated Tailwind config with extended tokens and glow utilities.",
+      "reason": "Not requested; unrelated to implementing logos/badge component and swap points.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/index.css summary)",
+        "frontend-file-summaries.txt (frontend/tailwind.config.js summary)"
       ]
     }
   ],
-  "confidence": 0.66,
+  "confidence": 0.72,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
+    "frontend/index.html",
     "frontend/src/components/Footer.tsx",
-    "frontend/src/pages/BookingPolicyPage.tsx",
-    "frontend/src/pages/PrivacyPolicyPage.tsx",
-    "frontend/src/pages/RefundPolicyPage.tsx",
-    "frontend/src/pages/TermsConditionsPage.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/ListingCard.tsx",
+    "frontend/src/components/TrustBadge.tsx",
     "project_state.json"
   ]
 }

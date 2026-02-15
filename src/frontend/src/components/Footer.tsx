@@ -21,7 +21,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <img 
-              src="/assets/generated/styo-logo-transparent.dim_200x80.png" 
+              src="/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg" 
               alt="STYO Logo" 
               className="h-12 mb-4"
               style={{

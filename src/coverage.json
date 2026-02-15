@@ -1,81 +1,97 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T22:54:48.529Z",
+  "generatedAt": "2026-02-14T23:28:11.561Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 4,
-    "implemented": 3,
+    "implemented": 4,
     "items": [
       {
+        "id": "REQ-1",
+        "summary": "Generate and add the official STYO primary logo assets using the “Tech Neon” direction: clean modern scalable SVG with a blue-to-purple gradient, subtle depth (not heavy 3D), optimized for dark UI, high contrast, and lightweight for web performance. Deliver full logo (icon + “STYO” text), icon-only, and white monochrome versions, each provided as SVG and transparent PNG.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.png",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.png"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.png",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.png"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Update the app to consistently use the new Tech Neon STYO logo assets in existing UI entry points: header brand image, footer brand image, and SEO/social metadata assets. Replace current references to /assets/generated/styo-logo-transparent.dim_200x80.png with the new full-logo asset, and update favicon usage to the new icon-only asset.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Implement a reusable SVG-based Gold “Verified” trust badge component (inspired by the gold D concept) with a clean gold gradient, subtle glow (not flashy), and web-performance-friendly SVG markup. The component must be reusable and accept props to support future badge variants (Featured with purple glow tag, Premium with gold outline, Elite with diamond style) without requiring a rewrite.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/TrustBadge.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/TrustBadge.tsx"
+        ]
+      },
+      {
         "id": "REQ-4",
-        "summary": "Update the existing Booking Policy & Terms page content to include stronger legal protection and clarity, including (a) the exact platform disclaimer text provided by the user, (b) the exact dispute/liability clause provided by the user, (c) an updated ₹99 unlock fee refund policy presented in bullet format with exactly the listed refund-eligible conditions and a clear statement that the unlock fee is non-refundable in all other cases, and (d) a data privacy statement covering contact sharing only after successful unlock and no third-party sharing without consent except where required by law. All user-facing text must be in English.",
+        "summary": "Attach the new Gold “Verified” badge component to listings in the UI in a way that is dynamically driven by listing data. Specifically, replace the current “Verified” pill/badge rendering in listing cards with the new SVG badge when listing.verified is true, while keeping layout mobile-responsive and not regressing performance.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/BookingPolicyPage.tsx"
+          "frontend/src/components/ListingCard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/BookingPolicyPage.tsx"
+          "frontend/src/components/ListingCard.tsx"
         ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Update the site footer to include and visibly display proper links exactly labeled: \"Privacy Policy\" | \"Terms & Conditions\" | \"Refund Policy\" | \"Contact Email\". Ensure each item navigates to an appropriate route/page (for the three policies) and opens an email link for Contact Email.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Footer.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Add dedicated frontend pages/routes for Privacy Policy, Terms & Conditions, and Refund Policy (English text). Ensure these pages include the same updated legal positions requested by the user where relevant (platform disclaimer, dispute clause post-unlock, refund eligibility bullets for ₹99 unlock fee, and the data privacy statement) without contradicting the Booking Policy & Terms page.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/PrivacyPolicyPage.tsx",
-          "frontend/src/pages/TermsConditionsPage.tsx",
-          "frontend/src/pages/RefundPolicyPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/PrivacyPolicyPage.tsx",
-          "frontend/src/pages/TermsConditionsPage.tsx",
-          "frontend/src/pages/RefundPolicyPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Footer.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Verify and, if missing or incomplete, implement the backend admin verification workflow for listings (including public submissions) and the 24-hour under-confirmation timeout logic. Specifically: ensure (a) an admin-only workflow exists to review/approve/reject submitted listings, (b) listing approvalStatus is enforced consistently for actions that require an approved listing, and (c) listings in propertyStatus #underConfirmation automatically revert to #available after 24 hours (system-driven).",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
+    "frontend/index.html",
+    "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
+    "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
+    "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+    "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
+    "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.png",
+    "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
+    "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.png",
+    "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
     "frontend/src/components/Footer.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/pages/BookingPolicyPage.tsx",
-    "frontend/src/pages/PrivacyPolicyPage.tsx",
-    "frontend/src/pages/RefundPolicyPage.tsx",
-    "frontend/src/pages/TermsConditionsPage.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/ListingCard.tsx",
+    "frontend/src/components/TrustBadge.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

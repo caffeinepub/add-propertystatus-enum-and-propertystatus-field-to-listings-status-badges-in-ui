@@ -47,7 +47,7 @@ const Header = memo(() => {
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
         <button onClick={handleHomeClick} className="flex items-center gap-3 group">
           <img 
-            src="/assets/generated/styo-logo-transparent.dim_200x80.png" 
+            src="/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg" 
             alt="STYO Logo" 
             className="h-10 sm:h-12 w-auto transition-transform duration-300 group-hover:scale-105"
             loading="eager"
