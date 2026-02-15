@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T23:28:11.561Z",
+  "generatedAt": "2026-02-15T23:35:17.034Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -12,64 +12,64 @@
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Generate and add the official STYO primary logo assets using the “Tech Neon” direction: clean modern scalable SVG with a blue-to-purple gradient, subtle depth (not heavy 3D), optimized for dark UI, high contrast, and lightweight for web performance. Deliver full logo (icon + “STYO” text), icon-only, and white monochrome versions, each provided as SVG and transparent PNG.",
+        "summary": "Generate and add the finalized official “STYO Tech Neon” logo asset set as background-free, optimized vector assets: full logo (icon + STYO text) and icon-only versions, with a subtle/sharp glow (reduced blur) and correct proportions/aspect ratio, ensuring the SVGs contain no rasterized glow effects and scale cleanly on mobile and desktop.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
-          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
-          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
-          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
-          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
-          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.png",
-          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
-          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.png"
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg"
         ],
         "matchedFiles": [
           "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
-          "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
-          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
-          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
-          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
-          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.png",
-          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
-          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.png"
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the app to consistently use the new Tech Neon STYO logo assets in existing UI entry points: header brand image, footer brand image, and SEO/social metadata assets. Replace current references to /assets/generated/styo-logo-transparent.dim_200x80.png with the new full-logo asset, and update favicon usage to the new icon-only asset.",
+        "summary": "Export and include the required raster deliverables for the finalized logo set: a 512x512 PNG app icon, a 32x32 favicon, and a white monochrome version (full logo and icon-only) as SVG (and include corresponding PNGs where specified by imageRequirements).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/index.html"
+          "frontend/public/assets/generated/styo-logo-tech-neon-appicon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg"
         ],
         "matchedFiles": [
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/index.html"
+          "frontend/public/assets/generated/styo-logo-tech-neon-appicon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png",
+          "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+          "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
+          "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Implement a reusable SVG-based Gold “Verified” trust badge component (inspired by the gold D concept) with a clean gold gradient, subtle glow (not flashy), and web-performance-friendly SVG markup. The component must be reusable and accept props to support future badge variants (Featured with purple glow tag, Premium with gold outline, Elite with diamond style) without requiring a rewrite.",
+        "summary": "Ensure the frontend loads the logo and favicon from the correct existing public asset paths by verifying/updating references in the Header, Footer, and index.html to point to the final generated filenames, and ensure no broken asset paths remain.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/TrustBadge.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/src/components/TrustBadge.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Attach the new Gold “Verified” badge component to listings in the UI in a way that is dynamically driven by listing data. Specifically, replace the current “Verified” pill/badge rendering in listing cards with the new SVG badge when listing.verified is true, while keeping layout mobile-responsive and not regressing performance.",
+        "summary": "Confirm in a developer-facing note (e.g., a short comment near the Header logo usage) the exact asset paths currently used by the app for: (1) header/footer full logo, and (2) favicon, matching the files shipped in frontend/public/assets/generated.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/ListingCard.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/src/components/ListingCard.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html"
         ]
       }
     ]
@@ -80,6 +80,8 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/index.html",
+    "frontend/public/assets/generated/styo-logo-tech-neon-appicon.dim_512x512.png",
+    "frontend/public/assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png",
     "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.png",
     "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
     "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
@@ -90,8 +92,6 @@
     "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
     "frontend/src/components/Footer.tsx",
     "frontend/src/components/Header.tsx",
-    "frontend/src/components/ListingCard.tsx",
-    "frontend/src/components/TrustBadge.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

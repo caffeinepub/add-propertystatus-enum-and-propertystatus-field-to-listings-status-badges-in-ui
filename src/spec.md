@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add the official STYO “Tech Neon” primary logo asset set and replace existing logo usage across the UI, plus introduce a modular SVG-based Gold “Verified” badge and use it on verified listings.
+**Goal:** Finalize the official “STYO Tech Neon” logo asset set (optimized, background-free SVGs + required PNG icons) and ensure all frontend references load from the correct public paths without broken assets.
 
 **Planned changes:**
-- Generate and add new STYO Tech Neon logo assets (full logo, icon-only, and white monochrome), each as lightweight SVG and transparent PNG, under `frontend/public/assets/generated/`.
-- Update header, footer, favicon, and SEO/social metadata image references to use the new logo assets (replacing usages of the current `styo-logo-transparent.dim_200x80.png`).
-- Implement a reusable inline-SVG Gold “Verified” badge React component with a prop-based API (size/className + variant/type pattern for future additions).
-- Update listing cards to render the new SVG Gold “Verified” badge when `listing.verified` is true, replacing the current “Verified” pill while keeping mobile-responsive layout.
+- Create finalized “STYO Tech Neon” vector logo assets (full + icon-only) as optimized SVGs with transparent background, correct proportions, and a subtle/sharp neon glow using vector-only effects (no rasterized glow/data URIs).
+- Export required raster deliverables: 512x512 app icon PNG, 32x32 favicon PNG, and white monochrome SVG variants (full + icon-only), all placed under `frontend/public/assets/generated/`.
+- Update/verify frontend asset references (Header, Footer, `index.html`, and social/metadata images) to point to the finalized generated filenames under `/assets/generated/`, removing any legacy/broken paths.
+- Add brief developer-facing notes in code documenting the exact paths used for (1) header/footer full logo and (2) favicon, matching the shipped filenames.
 
-**User-visible outcome:** The app displays the new Tech Neon STYO branding in the header/footer and browser/social previews, and verified listings show a premium gold SVG “Verified” badge on listing cards.
+**User-visible outcome:** The site shows the finalized STYO Tech Neon logo consistently in the header/footer across devices, the favicon/app icon display correctly, and no logo/icon asset URLs 404.

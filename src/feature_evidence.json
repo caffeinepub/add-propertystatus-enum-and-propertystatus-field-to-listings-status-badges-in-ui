@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-generate-and-add-the-official-styo-primary-logo-assets-using-the-tech-neon-direction-clean-modern-scalable-svg-with-a-blue-to-purple-gradient-subtle-depth-not-heavy-3d-optimized-for-dark-ui-high-contrast-and-lightweight-for-web-performance-deliver-full-logo-icon-styo-text-icon-only-and-white-monochrome-versions-each-provided-as-svg-and-transparent-png",
-      "featureTitle": "Generate and add the official STYO primary logo assets using the “Tech Neon” direction: clean modern scalable SVG with a blue-to-purple gradient, subtle depth (not heavy 3D), optimized for dark UI, high contrast, and lightweight for web performance. Deliver full logo (icon + “STYO” text), icon-only, and white monochrome versions, each provided as SVG and transparent PNG.",
+      "featureId": "feature-generate-and-add-the-finalized-official-styo-tech-neon-logo-asset-set-as-background-free-optimized-vector-assets-full-logo-icon-styo-text-and-icon-only-versions-with-a-subtle-sharp-glow-reduced-blur-and-correct-proportions-aspect-ratio-ensuring-the-svgs-contain-no-rasterized-glow-effects-and-scale-cleanly-on-mobile-and-desktop",
+      "featureTitle": "Generate and add the finalized official “STYO Tech Neon” logo asset set as background-free, optimized vector assets: full logo (icon + STYO text) and icon-only versions, with a subtle/sharp glow (reduced blur) and correct proportions/aspect ratio, ensuring the SVGs contain no rasterized glow effects and scale cleanly on mobile and desktop.",
       "files": [],
       "components": [
         "authorization@4.0.0",
@@ -21,13 +21,9 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-app-to-consistently-use-the-new-tech-neon-styo-logo-assets-in-existing-ui-entry-points-header-brand-image-footer-brand-image-and-seo-social-metadata-assets-replace-current-references-to-assets-generated-styo-logo-transparent-dim-200x80-png-with-the-new-full-logo-asset-and-update-favicon-usage-to-the-new-icon-only-asset",
-      "featureTitle": "Update the app to consistently use the new Tech Neon STYO logo assets in existing UI entry points: header brand image, footer brand image, and SEO/social metadata assets. Replace current references to /assets/generated/styo-logo-transparent.dim_200x80.png with the new full-logo asset, and update favicon usage to the new icon-only asset.",
-      "files": [
-        "frontend/index.html",
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/components/Header.tsx"
-      ],
+      "featureId": "feature-export-and-include-the-required-raster-deliverables-for-the-finalized-logo-set-a-512x512-png-app-icon-a-32x32-favicon-and-a-white-monochrome-version-full-logo-and-icon-only-as-svg-and-include-corresponding-pngs-where-specified-by-imagerequirements",
+      "featureTitle": "Export and include the required raster deliverables for the finalized logo set: a 512x512 PNG app icon, a 32x32 favicon, and a white monochrome version (full logo and icon-only) as SVG (and include corresponding PNGs where specified by imageRequirements).",
+      "files": [],
       "components": [
         "authorization@4.0.0",
         "blob-storage@4.0.0",
@@ -44,10 +40,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-a-reusable-svg-based-gold-verified-trust-badge-component-inspired-by-the-gold-d-concept-with-a-clean-gold-gradient-subtle-glow-not-flashy-and-web-performance-friendly-svg-markup-the-component-must-be-reusable-and-accept-props-to-support-future-badge-variants-featured-with-purple-glow-tag-premium-with-gold-outline-elite-with-diamond-style-without-requiring-a-rewrite",
-      "featureTitle": "Implement a reusable SVG-based Gold “Verified” trust badge component (inspired by the gold D concept) with a clean gold gradient, subtle glow (not flashy), and web-performance-friendly SVG markup. The component must be reusable and accept props to support future badge variants (Featured with purple glow tag, Premium with gold outline, Elite with diamond style) without requiring a rewrite.",
+      "featureId": "feature-ensure-the-frontend-loads-the-logo-and-favicon-from-the-correct-existing-public-asset-paths-by-verifying-updating-references-in-the-header-footer-and-index-html-to-point-to-the-final-generated-filenames-and-ensure-no-broken-asset-paths-remain",
+      "featureTitle": "Ensure the frontend loads the logo and favicon from the correct existing public asset paths by verifying/updating references in the Header, Footer, and index.html to point to the final generated filenames, and ensure no broken asset paths remain.",
       "files": [
-        "frontend/src/components/TrustBadge.tsx"
+        "frontend/index.html",
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -65,10 +63,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-attach-the-new-gold-verified-badge-component-to-listings-in-the-ui-in-a-way-that-is-dynamically-driven-by-listing-data-specifically-replace-the-current-verified-pill-badge-rendering-in-listing-cards-with-the-new-svg-badge-when-listing-verified-is-true-while-keeping-layout-mobile-responsive-and-not-regressing-performance",
-      "featureTitle": "Attach the new Gold “Verified” badge component to listings in the UI in a way that is dynamically driven by listing data. Specifically, replace the current “Verified” pill/badge rendering in listing cards with the new SVG badge when listing.verified is true, while keeping layout mobile-responsive and not regressing performance.",
+      "featureId": "feature-confirm-in-a-developer-facing-note-e-g-a-short-comment-near-the-header-logo-usage-the-exact-asset-paths-currently-used-by-the-app-for-1-header-footer-full-logo-and-2-favicon-matching-the-files-shipped-in-frontend-public-assets-generated",
+      "featureTitle": "Confirm in a developer-facing note (e.g., a short comment near the Header logo usage) the exact asset paths currently used by the app for: (1) header/footer full logo, and (2) favicon, matching the files shipped in frontend/public/assets/generated.",
       "files": [
-        "frontend/src/components/ListingCard.tsx"
+        "frontend/index.html",
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx"
       ],
       "components": [
         "authorization@4.0.0",

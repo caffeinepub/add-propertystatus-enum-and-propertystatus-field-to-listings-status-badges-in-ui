@@ -1,28 +1,40 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="techNeonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:oklch(0.65 0.25 250);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:oklch(0.60 0.28 280);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:oklch(0.55 0.22 310);stop-opacity:1" />
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+    <filter id="iconGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0" result="glow" />
       <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
   </defs>
   
-  <!-- Icon: Stylized S with 3D depth -->
-  <g transform="translate(106, 106)">
-    <!-- Shadow layer for depth -->
-    <path d="M 200 50 Q 280 50 280 150 Q 280 200 250 225 Q 280 250 280 300 Q 280 400 200 400 L 100 400 L 100 350 L 200 350 Q 250 350 250 300 Q 250 275 225 262.5 L 175 262.5 L 175 212.5 L 225 212.5 Q 250 200 250 150 Q 250 100 200 100 L 100 100 L 100 50 Z" fill="url(#techNeonGradient)" opacity="0.3" transform="translate(8, 8)"/>
+  <g filter="url(#iconGlow)">
+    <!-- Outer hexagon -->
+    <path d="M 156 96 L 256 36 L 356 96 L 356 216 L 256 276 L 156 216 Z" 
+          fill="url(#iconGradient)" 
+          stroke="url(#iconGradient)" 
+          stroke-width="4" 
+          opacity="0.9" />
     
-    <!-- Main S shape -->
-    <path d="M 200 50 Q 280 50 280 150 Q 280 200 250 225 Q 280 250 280 300 Q 280 400 200 400 L 100 400 L 100 350 L 200 350 Q 250 350 250 300 Q 250 275 225 262.5 L 175 262.5 L 175 212.5 L 225 212.5 Q 250 200 250 150 Q 250 100 200 100 L 100 100 L 100 50 Z" fill="url(#techNeonGradient)" filter="url(#glow)"/>
+    <!-- Inner S shape -->
+    <path d="M 196 126 Q 226 111 256 126 Q 286 141 286 171 Q 286 191 256 206 Q 226 221 226 246 Q 226 271 256 286 Q 286 301 316 286" 
+          fill="none" 
+          stroke="white" 
+          stroke-width="18" 
+          stroke-linecap="round" 
+          opacity="0.95" />
     
-    <!-- Highlight for 3D effect -->
-    <path d="M 200 60 Q 270 60 270 150 Q 270 190 250 210 L 235 210 Q 260 195 260 150 Q 260 85 200 85 L 115 85 L 115 60 Z" fill="white" opacity="0.3"/>
+    <!-- Tech accent lines -->
+    <line x1="171" y1="146" x2="196" y2="136" stroke="white" stroke-width="4" opacity="0.7" />
+    <line x1="316" y1="186" x2="341" y2="176" stroke="white" stroke-width="4" opacity="0.7" />
+    <line x1="171" y1="226" x2="196" y2="236" stroke="white" stroke-width="4" opacity="0.7" />
+    <line x1="316" y1="266" x2="341" y2="276" stroke="white" stroke-width="4" opacity="0.7" />
   </g>
 </svg>

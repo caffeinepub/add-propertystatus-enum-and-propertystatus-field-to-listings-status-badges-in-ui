@@ -18,7 +18,7 @@ export default function Footer() {
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          {/* Brand */}
+          {/* Brand - Logo: /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg */}
           <div>
             <img 
               src="/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg" 
