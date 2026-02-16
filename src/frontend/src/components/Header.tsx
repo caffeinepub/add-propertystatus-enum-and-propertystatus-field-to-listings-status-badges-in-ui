@@ -46,11 +46,11 @@ const Header = memo(() => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
         {/* Logo: /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg */}
-        <button onClick={handleHomeClick} className="flex items-center gap-3 group">
+        <button onClick={handleHomeClick} className="flex items-center gap-3 group p-0 leading-none shrink-0">
           <img 
             src="/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg" 
             alt="STYO Logo" 
-            className="h-10 sm:h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+            className="h-9 sm:h-14 w-auto block aspect-auto transition-transform duration-300 group-hover:scale-105"
             loading="eager"
           />
         </button>

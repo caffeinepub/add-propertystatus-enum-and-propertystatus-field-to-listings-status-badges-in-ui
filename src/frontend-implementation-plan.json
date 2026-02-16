@@ -1,119 +1,51 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Finalize STYO Tech Neon logo assets and correct frontend asset loading paths",
+  "title": "Increase header navbar logo size and align with auth button",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add finalized background-free, optimized SVG Tech Neon logo variants (full + icon-only) with subtle/sharp vector glow and correct proportions.",
+      "summary": "Increase header logo height responsively while preserving SVG aspect ratio.",
       "acceptanceCriteria": [
-        "All requested logo variants are present as static files under frontend/public/assets/generated/ (see imageRequirements filenames).",
-        "SVGs render crisply at small sizes (e.g., 32px–64px icon usage) and at large sizes (e.g., header logo) without distortion or pixelation.",
-        "SVG markup uses vector shapes/gradients/filters only (no embedded raster images/data URIs for glow).",
-        "Glow is visibly more subtle and sharper than the prior version (reduced blur radius / less spread), while keeping a tech-neon look.",
-        "Full logo and icon-only preserve consistent proportions across exported formats (SVG/PNG)."
+        "On viewport widths below the `sm` breakpoint, the rendered logo height is between 36px and 40px.",
+        "On desktop viewports, the rendered logo height is between 48px and 56px.",
+        "The logo uses `width: auto` (or equivalent) so the SVG is not stretched/squashed."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg",
-          "operation": "create",
-          "description": "Create the finalized Tech Neon full logo as an optimized, background-free SVG with a subtle/sharp *vector* glow (no embedded rasters/data-URIs), maintaining correct aspect ratio and clean scaling across mobile/desktop."
-        },
-        {
-          "path": "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.svg",
-          "operation": "create",
-          "description": "Create the finalized Tech Neon icon-only mark as an optimized, background-free SVG with a subtle/sharp *vector* glow (no embedded rasters/data-URIs), suitable for crisp small-size rendering."
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Adjust the logo <img> Tailwind sizing classes to meet the required responsive heights (36–40px below `sm`, 48–56px on desktop) while preserving aspect ratio via `w-auto` (and/or `aspect-auto`). Ensure the logo uses explicit height utilities (e.g., `h-9`/`h-10` and `sm:h-12`/`sm:h-14`) rather than relying on inherited line-height."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add required raster exports (app icon + favicon) and white monochrome SVG variants for the finalized logo set.",
+      "summary": "Prevent container/padding constraints from shrinking the logo and keep it vertically aligned with the Login/Logout button.",
       "acceptanceCriteria": [
-        "512x512 PNG exists at the specified filename and has transparent background.",
-        "32x32 favicon exists at the specified filename and is crisp/legible at 32x32.",
-        "White monochrome full logo and icon-only SVGs exist and render as solid white on transparent background.",
-        "All exported PNGs are optimized (reasonable file size for web use) and have correct dimensions."
+        "The logo and the Login/Logout button are vertically centered relative to each other in the header (no noticeable baseline mismatch).",
+        "There is no additional padding/margin applied to the logo element that reduces its visible size relative to the specified height."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/styo-logo-tech-neon-appicon.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the finalized Tech Neon 512x512 PNG app icon with transparent background and optimized file size."
-        },
-        {
-          "path": "frontend/public/assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png",
-          "operation": "create",
-          "description": "Add the finalized Tech Neon 32x32 PNG favicon with transparent background, optimized and legible at 32x32."
-        },
-        {
-          "path": "frontend/public/assets/generated/styo-logo-tech-neon-icon.dim_512x512.png",
+          "path": "frontend/src/components/Header.tsx",
           "operation": "modify",
-          "description": "Ensure the existing Tech Neon icon-only 512x512 PNG matches the finalized icon proportions and subtle/sharp glow direction, remains transparent, and is optimized for web use."
-        },
-        {
-          "path": "frontend/public/assets/generated/styo-logo-white-full.dim_1200x400.svg",
-          "operation": "create",
-          "description": "Create the white monochrome full logo SVG (solid white shapes on transparent background), optimized for clean scaling and use on dark backgrounds."
-        },
-        {
-          "path": "frontend/public/assets/generated/styo-logo-white-icon.dim_512x512.svg",
-          "operation": "create",
-          "description": "Create the white monochrome icon-only SVG (solid white shapes on transparent background), optimized for clean scaling."
+          "description": "Update the logo wrapper and image classes to avoid any default button padding/line-height effects (e.g., add `p-0`, `leading-none`, `shrink-0`, and make the <img> `block`) and ensure the header row maintains `items-center` alignment between the left logo cluster and the right auth button cluster so the visual centers match."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update and verify Header/Footer/index.html references to use the correct generated logo + favicon asset paths with no broken legacy references.",
+      "summary": "Ensure the header navbar logo uses only the SVG asset across all breakpoints.",
       "acceptanceCriteria": [
-        "Header logo <img> loads successfully from /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg (no 404 in browser network panel).",
-        "Footer logo <img> loads successfully from /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg (no 404).",
-        "index.html favicon link points to a real file path under /assets/generated/ and loads successfully (no 404).",
-        "OpenGraph/Twitter image references remain valid and point to an existing PNG under /assets/generated/ (no 404).",
-        "No other references to non-existent legacy logo paths remain in the frontend."
+        "The header logo `<img>` source points to an SVG asset (not PNG/JPG).",
+        "No alternative raster logo source is used for the navbar logo across breakpoints."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/Header.tsx",
           "operation": "modify",
-          "description": "Verify the header logo <img> uses the final generated asset path /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg and remove/replace any legacy logo paths if present."
-        },
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Verify the footer logo <img> uses the final generated asset path /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg and remove/replace any legacy logo paths if present."
-        },
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Update the favicon link to /assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png and verify OG/Twitter image meta tags reference an existing PNG under /assets/generated/."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Document the exact shipped public asset paths used for header/footer logo and favicon via concise developer-facing comments near usage sites.",
-      "acceptanceCriteria": [
-        "Header source path is explicitly documented in code near the Header logo <img> usage.",
-        "Favicon source path is explicitly documented in code near the favicon declaration in frontend/index.html (comment) or in an adjacent documented location.",
-        "Documented paths match the actual filenames present in frontend/public/assets/generated and load in the running app."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Header.tsx",
-          "operation": "modify",
-          "description": "Add a short developer-facing comment adjacent to the header logo <img> documenting the exact shipped path: /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg."
-        },
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Add a short developer-facing comment adjacent to the footer logo <img> documenting the exact shipped path: /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg."
-        },
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Add a short developer-facing comment near the favicon <link> documenting the exact shipped path: /assets/generated/styo-logo-tech-neon-favicon.dim_32x32.png."
+          "description": "Confirm the header logo continues to reference the existing SVG asset as the single source of truth (keep the <img src> pointing to the SVG), and avoid adding any conditional rendering or breakpoints that swap in raster images."
         }
       ]
     }

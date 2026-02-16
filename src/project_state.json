@@ -1,59 +1,40 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project focused on fixing and finalizing the STYO Tech Neon branding assets and ensuring correct frontend loading (logo, favicon/app icons), with confirmed asset paths.",
-  "architectural_notes": [
-    "Store logo assets under public/assets and ensure header/logo components reference exact existing paths.",
-    "Use icon-only asset for favicon/app icon; keep full logo for header/desktop/mobile responsive rendering."
-  ],
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [
-    "Frontend logo not correctly visible due to broken/mismatched asset path(s); requires correcting public asset placement and header references."
+    "Navbar/header logo appears too small; needs increased height (desktop 48–56px, mobile 36–40px) with no extra padding shrink, vertically aligned with Login button, preserve aspect ratio, and use clean SVG only."
   ],
   "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Tech neon full logo (icon + STYO text), transparent background, subtle sharp glow, optimized vector (styo-logo-tech-neon-full.dim_1200x400.svg)\n- Tech neon icon-only mark, transparent background, subtle sharp glow, optimized vector (styo-logo-tech-neon-icon.dim_512x512.svg)\n- Tech neon icon-only mark, transparent background (styo-logo-tech-neon-icon.dim_512x512.png)\n- Tech neon icon-only mark, transparent background, 512x512 (styo-logo-tech-neon-appicon.dim_512x512.png)\n- Tech neon favicon, transparent background, 32x32 (styo-logo-tech-neon-favicon.dim_32x32.png)\n- White monochrome full logo (icon + STYO text), transparent background, optimized vector (styo-logo-white-full.dim_1200x400.svg)\n- White monochrome icon-only mark, transparent background, optimized vector (styo-logo-white-icon.dim_512x512.svg)",
   "existing_features": [
     {
-      "id": "feature-generate-and-add-the-finalized-official-styo-tech-neon-logo-asset-set-as-background-free-optimized-vector-assets-full-logo-icon-styo-text-and-icon-only-versions-with-a-subtle-sharp-glow-reduced-blur-and-correct-proportions-aspect-ratio-ensuring-the-svgs-contain-no-rasterized-glow-effects-and-scale-cleanly-on-mobile-and-desktop",
-      "title": "Generate and add the finalized official “STYO Tech Neon” logo asset set as background-free, optimized vector assets: full logo (icon + STYO text) and icon-only versions, with a subtle/sharp glow (reduced blur) and correct proportions/aspect ratio, ensuring the SVGs contain no rasterized glow effects and scale cleanly on mobile and desktop.",
+      "id": "feature-update-the-navbar-logo-rendering-in-frontend-src-components-header-tsx-so-the-logo-appears-larger-in-the-header-set-the-logo-image-height-to-be-within-36-40px-on-mobile-and-48-56px-on-desktop-while-preserving-aspect-ratio-no-stretching",
+      "title": "Update the navbar logo rendering in `frontend/src/components/Header.tsx` so the logo appears larger in the header: set the logo image height to be within 36–40px on mobile and 48–56px on desktop, while preserving aspect ratio (no stretching).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-export-and-include-the-required-raster-deliverables-for-the-finalized-logo-set-a-512x512-png-app-icon-a-32x32-favicon-and-a-white-monochrome-version-full-logo-and-icon-only-as-svg-and-include-corresponding-pngs-where-specified-by-imagerequirements",
-      "title": "Export and include the required raster deliverables for the finalized logo set: a 512x512 PNG app icon, a 32x32 favicon, and a white monochrome version (full logo and icon-only) as SVG (and include corresponding PNGs where specified by imageRequirements).",
+      "id": "feature-ensure-the-navbar-logo-is-not-visually-reduced-by-extra-padding-or-a-constrained-parent-container-the-logo-s-displayed-height-must-match-the-intended-css-height-not-shrunk-due-to-padding-line-height-or-container-constraints-and-the-logo-remains-vertically-aligned-with-the-login-logout-button-in-the-header",
+      "title": "Ensure the navbar logo is not visually reduced by extra padding or a constrained parent container: the logo’s displayed height must match the intended CSS height (not shrunk due to padding, line-height, or container constraints), and the logo remains vertically aligned with the Login/Logout button in the header.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-the-frontend-loads-the-logo-and-favicon-from-the-correct-existing-public-asset-paths-by-verifying-updating-references-in-the-header-footer-and-index-html-to-point-to-the-final-generated-filenames-and-ensure-no-broken-asset-paths-remain",
-      "title": "Ensure the frontend loads the logo and favicon from the correct existing public asset paths by verifying/updating references in the Header, Footer, and index.html to point to the final generated filenames, and ensure no broken asset paths remain.",
+      "id": "feature-use-only-the-clean-svg-logo-asset-for-the-header-logo-no-raster-png-logo-usage-in-the-navbar-keeping-the-existing-svg-path-as-the-source-of-truth",
+      "title": "Use only the clean SVG logo asset for the header logo (no raster/PNG logo usage in the navbar), keeping the existing SVG path as the source of truth.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
-    },
-    {
-      "id": "feature-confirm-in-a-developer-facing-note-e-g-a-short-comment-near-the-header-logo-usage-the-exact-asset-paths-currently-used-by-the-app-for-1-header-footer-full-logo-and-2-favicon-matching-the-files-shipped-in-frontend-public-assets-generated",
-      "title": "Confirm in a developer-facing note (e.g., a short comment near the Header logo usage) the exact asset paths currently used by the app for: (1) header/footer full logo, and (2) favicon, matching the files shipped in frontend/public/assets/generated.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Finalize official STYO Tech Neon logo set: clean background-free export, optimized SVGs (no raster glow), proper proportions, reduced blur, scalable across mobile/desktop; deliver full logo SVG, icon-only SVG, 512x512 PNG, 32x32 favicon, and white monochrome version; confirm exact asset path used by frontend.",
-      "reqIds": [],
-      "status": "pending"
-    }
-  ],
-  "projectName": "STYO Tech Neon",
+  "new_feature_requests": [],
+  "projectName": "Increase navbar logo size and alignment in header",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

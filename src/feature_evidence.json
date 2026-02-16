@@ -2,9 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-generate-and-add-the-finalized-official-styo-tech-neon-logo-asset-set-as-background-free-optimized-vector-assets-full-logo-icon-styo-text-and-icon-only-versions-with-a-subtle-sharp-glow-reduced-blur-and-correct-proportions-aspect-ratio-ensuring-the-svgs-contain-no-rasterized-glow-effects-and-scale-cleanly-on-mobile-and-desktop",
-      "featureTitle": "Generate and add the finalized official “STYO Tech Neon” logo asset set as background-free, optimized vector assets: full logo (icon + STYO text) and icon-only versions, with a subtle/sharp glow (reduced blur) and correct proportions/aspect ratio, ensuring the SVGs contain no rasterized glow effects and scale cleanly on mobile and desktop.",
-      "files": [],
+      "featureId": "feature-update-the-navbar-logo-rendering-in-frontend-src-components-header-tsx-so-the-logo-appears-larger-in-the-header-set-the-logo-image-height-to-be-within-36-40px-on-mobile-and-48-56px-on-desktop-while-preserving-aspect-ratio-no-stretching",
+      "featureTitle": "Update the navbar logo rendering in `frontend/src/components/Header.tsx` so the logo appears larger in the header: set the logo image height to be within 36–40px on mobile and 48–56px on desktop, while preserving aspect ratio (no stretching).",
+      "files": [
+        "frontend/src/components/Header.tsx"
+      ],
       "components": [
         "authorization@4.0.0",
         "blob-storage@4.0.0",
@@ -21,9 +23,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-export-and-include-the-required-raster-deliverables-for-the-finalized-logo-set-a-512x512-png-app-icon-a-32x32-favicon-and-a-white-monochrome-version-full-logo-and-icon-only-as-svg-and-include-corresponding-pngs-where-specified-by-imagerequirements",
-      "featureTitle": "Export and include the required raster deliverables for the finalized logo set: a 512x512 PNG app icon, a 32x32 favicon, and a white monochrome version (full logo and icon-only) as SVG (and include corresponding PNGs where specified by imageRequirements).",
-      "files": [],
+      "featureId": "feature-ensure-the-navbar-logo-is-not-visually-reduced-by-extra-padding-or-a-constrained-parent-container-the-logo-s-displayed-height-must-match-the-intended-css-height-not-shrunk-due-to-padding-line-height-or-container-constraints-and-the-logo-remains-vertically-aligned-with-the-login-logout-button-in-the-header",
+      "featureTitle": "Ensure the navbar logo is not visually reduced by extra padding or a constrained parent container: the logo’s displayed height must match the intended CSS height (not shrunk due to padding, line-height, or container constraints), and the logo remains vertically aligned with the Login/Logout button in the header.",
+      "files": [
+        "frontend/src/components/Header.tsx"
+      ],
       "components": [
         "authorization@4.0.0",
         "blob-storage@4.0.0",
@@ -40,11 +44,9 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-the-frontend-loads-the-logo-and-favicon-from-the-correct-existing-public-asset-paths-by-verifying-updating-references-in-the-header-footer-and-index-html-to-point-to-the-final-generated-filenames-and-ensure-no-broken-asset-paths-remain",
-      "featureTitle": "Ensure the frontend loads the logo and favicon from the correct existing public asset paths by verifying/updating references in the Header, Footer, and index.html to point to the final generated filenames, and ensure no broken asset paths remain.",
+      "featureId": "feature-use-only-the-clean-svg-logo-asset-for-the-header-logo-no-raster-png-logo-usage-in-the-navbar-keeping-the-existing-svg-path-as-the-source-of-truth",
+      "featureTitle": "Use only the clean SVG logo asset for the header logo (no raster/PNG logo usage in the navbar), keeping the existing SVG path as the source of truth.",
       "files": [
-        "frontend/index.html",
-        "frontend/src/components/Footer.tsx",
         "frontend/src/components/Header.tsx"
       ],
       "components": [
@@ -59,29 +61,6 @@
       ],
       "testIds": [
         "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-confirm-in-a-developer-facing-note-e-g-a-short-comment-near-the-header-logo-usage-the-exact-asset-paths-currently-used-by-the-app-for-1-header-footer-full-logo-and-2-favicon-matching-the-files-shipped-in-frontend-public-assets-generated",
-      "featureTitle": "Confirm in a developer-facing note (e.g., a short comment near the Header logo usage) the exact asset paths currently used by the app for: (1) header/footer full logo, and (2) favicon, matching the files shipped in frontend/public/assets/generated.",
-      "files": [
-        "frontend/index.html",
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/components/Header.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "http-outcalls@3.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

@@ -1,117 +1,71 @@
 {
   "kind": "build_request",
-  "title": "Finalize STYO Tech Neon logo assets (optimized SVGs + icons) and fix frontend loading paths",
+  "title": "Increase navbar logo size and alignment in header",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Generate and add the finalized official “STYO Tech Neon” logo asset set as background-free, optimized vector assets: full logo (icon + STYO text) and icon-only versions, with a subtle/sharp glow (reduced blur) and correct proportions/aspect ratio, ensuring the SVGs contain no rasterized glow effects and scale cleanly on mobile and desktop.",
+      "text": "Update the navbar logo rendering in `frontend/src/components/Header.tsx` so the logo appears larger in the header: set the logo image height to be within 36–40px on mobile and 48–56px on desktop, while preserving aspect ratio (no stretching).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-logos-1"
+          "msg-1"
         ],
         "quotes": [
-          "Please finalize this as the official STYO Tech Neon logo.\nNow do the following:\nExtract the logo cleanly (without background).\nExport as proper optimized SVG (no raster glow effects).\nMaintain correct proportions and aspect ratio.\nReduce excessive blur — keep glow subtle and sharp.\nEnsure it scales perfectly on mobile and desktop."
+          "Increase the logo height in the navbar.\nDesktop: 48–56px height\nMobile: 36–40px height\nEnsure aspect ratio is preserved (no stretching)."
         ]
       },
       "acceptanceCriteria": [
-        "All requested logo variants are present as static files under frontend/public/assets/generated/ (see imageRequirements filenames).",
-        "SVGs render crisply at small sizes (e.g., 32px–64px icon usage) and at large sizes (e.g., header logo) without distortion or pixelation.",
-        "SVG markup uses vector shapes/gradients/filters only (no embedded raster images/data URIs for glow).",
-        "Glow is visibly more subtle and sharper than the prior version (reduced blur radius / less spread), while keeping a tech-neon look.",
-        "Full logo and icon-only preserve consistent proportions across exported formats (SVG/PNG)."
+        "On viewport widths below the `sm` breakpoint, the rendered logo height is between 36px and 40px.",
+        "On desktop viewports, the rendered logo height is between 48px and 56px.",
+        "The logo uses `width: auto` (or equivalent) so the SVG is not stretched/squashed."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Export and include the required raster deliverables for the finalized logo set: a 512x512 PNG app icon, a 32x32 favicon, and a white monochrome version (full logo and icon-only) as SVG (and include corresponding PNGs where specified by imageRequirements).",
+      "text": "Ensure the navbar logo is not visually reduced by extra padding or a constrained parent container: the logo’s displayed height must match the intended CSS height (not shrunk due to padding, line-height, or container constraints), and the logo remains vertically aligned with the Login/Logout button in the header.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-logos-1"
+          "msg-1"
         ],
         "quotes": [
-          "Deliver:\nFull logo (icon + STYO text) SVG\nIcon-only SVG (for favicon & app icon)\n512x512 PNG (app icon)\n32x32 favicon\nWhite monochrome version"
+          "Do not shrink it inside extra padding.\nMaintain proper vertical alignment with the Login button."
         ]
       },
       "acceptanceCriteria": [
-        "512x512 PNG exists at the specified filename and has transparent background.",
-        "32x32 favicon exists at the specified filename and is crisp/legible at 32x32.",
-        "White monochrome full logo and icon-only SVGs exist and render as solid white on transparent background.",
-        "All exported PNGs are optimized (reasonable file size for web use) and have correct dimensions."
+        "The logo and the Login/Logout button are vertically centered relative to each other in the header (no noticeable baseline mismatch).",
+        "There is no additional padding/margin applied to the logo element that reduces its visible size relative to the specified height."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Ensure the frontend loads the logo and favicon from the correct existing public asset paths by verifying/updating references in the Header, Footer, and index.html to point to the final generated filenames, and ensure no broken asset paths remain.",
+      "text": "Use only the clean SVG logo asset for the header logo (no raster/PNG logo usage in the navbar), keeping the existing SVG path as the source of truth.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-logos-1",
-          "msg-user-paths-1"
+          "msg-1"
         ],
         "quotes": [
-          "Also confirm the exact asset path where the logo is stored and being loaded from.",
-          "Make sure:\nThe correct SVG files are placed in the public/assets directory.\nThe file paths in the header point to the exact existing location.\nThe full logo renders properly on desktop and mobile.\nThe icon-only version is correctly set as favicon.\nNo broken asset paths remain after rebuild.\nAfter rebuilding, please confirm the exact file path being used for the logo."
+          "Use the clean SVG version only"
         ]
       },
       "acceptanceCriteria": [
-        "Header logo <img> loads successfully from /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg (no 404 in browser network panel).",
-        "Footer logo <img> loads successfully from /assets/generated/styo-logo-tech-neon-full.dim_1200x400.svg (no 404).",
-        "index.html favicon link points to a real file path under /assets/generated/ and loads successfully (no 404).",
-        "OpenGraph/Twitter image references remain valid and point to an existing PNG under /assets/generated/ (no 404).",
-        "No other references to non-existent legacy logo paths remain in the frontend."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Confirm in a developer-facing note (e.g., a short comment near the Header logo usage) the exact asset paths currently used by the app for: (1) header/footer full logo, and (2) favicon, matching the files shipped in frontend/public/assets/generated.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-logos-1"
-        ],
-        "quotes": [
-          "Also confirm the exact asset path where the logo is stored and being loaded from."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Header source path is explicitly documented in code near the Header logo <img> usage.",
-        "Favicon source path is explicitly documented in code near the favicon declaration in frontend/index.html (comment) or in an adjacent documented location.",
-        "Documented paths match the actual filenames present in frontend/public/assets/generated and load in the running app."
+        "The header logo `<img>` source points to an SVG asset (not PNG/JPG).",
+        "No alternative raster logo source is used for the navbar logo across breakpoints."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui or any frontend immutablePaths listed in SYSTEM_CONTEXT.",
-    "Keep all backend logic unchanged; this request is branding/asset and frontend-loading only."
+    "Do not modify any files under `frontend/src/hooks/` listed as immutable in SYSTEM_CONTEXT.",
+    "Keep all changes within the existing React + Tailwind setup; do not introduce new frontend frameworks or backend services."
   ],
   "nonGoals": [
-    "Redesigning the site layout or changing navigation/content beyond what is required to correctly load and display the logo assets.",
-    "Adding new authentication providers or any non-Internet-Identity auth changes.",
-    "Introducing any external image hosting/CDN; assets must be served from the app’s public directory."
+    "Generating or redesigning the logo artwork.",
+    "Changing favicon, footer logo, or other branding placements not directly related to the header logo size/alignment."
   ],
   "imageRequirements": {
-    "required": [
-      "Tech neon full logo (icon + STYO text), transparent background, subtle sharp glow, optimized vector (styo-logo-tech-neon-full.dim_1200x400.svg)",
-      "Tech neon icon-only mark, transparent background, subtle sharp glow, optimized vector (styo-logo-tech-neon-icon.dim_512x512.svg)",
-      "Tech neon icon-only mark, transparent background (styo-logo-tech-neon-icon.dim_512x512.png)",
-      "Tech neon icon-only mark, transparent background, 512x512 (styo-logo-tech-neon-appicon.dim_512x512.png)",
-      "Tech neon favicon, transparent background, 32x32 (styo-logo-tech-neon-favicon.dim_32x32.png)",
-      "White monochrome full logo (icon + STYO text), transparent background, optimized vector (styo-logo-white-full.dim_1200x400.svg)",
-      "White monochrome icon-only mark, transparent background, optimized vector (styo-logo-white-icon.dim_512x512.svg)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }
