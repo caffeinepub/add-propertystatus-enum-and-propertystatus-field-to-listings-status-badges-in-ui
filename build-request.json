@@ -1,0 +1,80 @@
+{
+  "kind": "build_request",
+  "title": "Fix broken logo image in navbar (asset loading issue)",
+  "projectName": "STYO",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Audit the logo image reference in `frontend/src/components/Header.tsx`: verify the `src` attribute path exactly matches the actual filename on disk (including case sensitivity), confirm the asset exists under `frontend/public/` or the correct static assets directory, and ensure the path used is compatible with the production build output (e.g., using a root-relative `/` prefix or correct Vite asset import rather than a relative path that breaks in nested routes).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Verify the logo image path in production.",
+          "Check for case-sensitive filename mismatch.",
+          "Confirm the logo asset is included in the production build."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The logo `<img>` tag in `Header.tsx` references a path that resolves correctly in the production build.",
+        "The logo filename on disk matches the reference exactly, including letter case.",
+        "No broken image icon appears in the navbar in any route (home, listings, detail pages, etc.).",
+        "The logo loads correctly when tested in an incognito browser window with cache cleared."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Ensure the logo asset file is physically present in `frontend/public/` (or the appropriate static assets folder) and is included in the production build output. If the file is missing, add or restore it. If it was previously imported via a JS/TS import rather than placed in `public/`, standardise the approach so it is reliably bundled.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Ensure the file exists on the server.",
+          "Confirm the logo asset is included in the production build."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The logo image file exists in the project at the path referenced by `Header.tsx`.",
+        "The asset appears in the production build output directory.",
+        "The navbar displays the logo image (not a broken image placeholder) after a fresh production build."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Also verify and fix the logo image reference in `frontend/src/components/Footer.tsx` using the same corrected path/import approach applied to the Header, so the logo is consistent and working across the entire site.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Right now the header does not look premium because the logo is missing."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Footer also renders the logo image without a broken image icon.",
+        "Both Header and Footer use the same consistent logo asset path."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not change the backend schema or any Motoko files.",
+    "Do not modify any files under frontend/src/hooks/ or frontend/src/components/ui (immutable paths).",
+    "Fix must be scoped to asset path resolution and file presence only — do not alter logo sizing or alignment styles established in prior versions."
+  ],
+  "nonGoals": [
+    "Redesigning or resizing the logo.",
+    "Changes to navbar layout, spacing, or alignment.",
+    "Any backend changes.",
+    "Adding new logo variants or formats."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix broken logo image in navbar (asset loading issue)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Audit and fix the logo image reference in Header.tsx to ensure correct asset path resolution in production builds",
+      "acceptanceCriteria": [
+        "The logo `<img>` tag in `Header.tsx` references a path that resolves correctly in the production build.",
+        "The logo filename on disk matches the reference exactly, including letter case.",
+        "No broken image icon appears in the navbar in any route (home, listings, detail pages, etc.).",
+        "The logo loads correctly when tested in an incognito browser window with cache cleared."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Update the logo image `src` attribute to use the correct workspace path: `frontend/public/assets/generated/styo-logo-transparent.dim_200x80.png`. Ensure the path is root-relative (starts with `/assets/generated/`) to work correctly in production builds and nested routes. Verify the filename matches the asset exactly, including case sensitivity and the `.dim_200x80` dimension suffix."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Verify the logo asset file exists at the correct location and is included in the production build",
+      "acceptanceCriteria": [
+        "The logo image file exists in the project at the path referenced by `Header.tsx`.",
+        "The asset appears in the production build output directory.",
+        "The navbar displays the logo image (not a broken image placeholder) after a fresh production build."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/styo-logo-transparent.dim_200x80.png",
+          "operation": "create",
+          "description": "Ensure the generated logo asset `styo-logo-transparent.dim_200x80.png` physically exists in `frontend/public/assets/generated/`. If the file is missing, restore it from the workspace assets list. This file must be present for the Header logo reference to resolve correctly in both development and production builds."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Verify and fix the logo image reference in Footer.tsx using the same corrected path approach",
+      "acceptanceCriteria": [
+        "The Footer also renders the logo image without a broken image icon.",
+        "Both Header and Footer use the same consistent logo asset path."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Update the Footer logo image `src` attribute to use the same corrected workspace path as the Header: `/assets/generated/styo-logo-transparent.dim_200x80.png`. Ensure consistency between Header and Footer logo references, using the same root-relative path format that works correctly across all routes in production builds."
+        }
+      ]
+    }
+  ]
+}

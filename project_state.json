@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Web project with navbar/header work in progress. Logo asset loading broken in production (broken image icon in navbar).",
+  "architectural_notes": [],
+  "known_issues": [
+    "Logo image not loading in production navbar — broken image icon appears; likely asset path, case-sensitivity, or build inclusion issue."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-audit-the-logo-image-reference-in-frontend-src-components-header-tsx-verify-the-src-attribute-path-exactly-matches-the-actual-filename-on-disk-including-case-sensitivity-confirm-the-asset-exists-under-frontend-public-or-the-correct-static-assets-directory-and-ensure-the-path-used-is-compatible-with-the-production-build-output-e-g-using-a-root-relative-prefix-or-correct-vite-asset-import-rather-than-a-relative-path-that-breaks-in-nested-routes",
+      "title": "Audit the logo image reference in `frontend/src/components/Header.tsx`: verify the `src` attribute path exactly matches the actual filename on disk (including case sensitivity), confirm the asset exists under `frontend/public/` or the correct static assets directory, and ensure the path used is compatible with the production build output (e.g., using a root-relative `/` prefix or correct Vite asset import rather than a relative path that breaks in nested routes).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-also-verify-and-fix-the-logo-image-reference-in-frontend-src-components-footer-tsx-using-the-same-corrected-path-import-approach-applied-to-the-header-so-the-logo-is-consistent-and-working-across-the-entire-site",
+      "title": "Also verify and fix the logo image reference in `frontend/src/components/Footer.tsx` using the same corrected path/import approach applied to the Header, so the logo is consistent and working across the entire site.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-2",
+      "summary": "Ensure the logo asset file is physically present in `frontend/public/` (or the appropriate static assets folder) and is included in the production build output. If the file is missing, add or restore it. If it was previously imported via a JS/TS import rather than placed in `public/`, standardise the approach so it is reliably bundled.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "STYO",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-audit-the-logo-image-reference-in-frontend-src-components-header-tsx-verify-the-src-attribute-path-exactly-matches-the-actual-filename-on-disk-including-case-sensitivity-confirm-the-asset-exists-under-frontend-public-or-the-correct-static-assets-directory-and-ensure-the-path-used-is-compatible-with-the-production-build-output-e-g-using-a-root-relative-prefix-or-correct-vite-asset-import-rather-than-a-relative-path-that-breaks-in-nested-routes",
+      "featureTitle": "Audit the logo image reference in `frontend/src/components/Header.tsx`: verify the `src` attribute path exactly matches the actual filename on disk (including case sensitivity), confirm the asset exists under `frontend/public/` or the correct static assets directory, and ensure the path used is compatible with the production build output (e.g., using a root-relative `/` prefix or correct Vite asset import rather than a relative path that breaks in nested routes).",
+      "files": [
+        "frontend/src/components/Header.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-also-verify-and-fix-the-logo-image-reference-in-frontend-src-components-footer-tsx-using-the-same-corrected-path-import-approach-applied-to-the-header-so-the-logo-is-consistent-and-working-across-the-entire-site",
+      "featureTitle": "Also verify and fix the logo image reference in `frontend/src/components/Footer.tsx` using the same corrected path/import approach applied to the Header, so the logo is consistent and working across the entire site.",
+      "files": [
+        "frontend/src/components/Footer.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-26T11:42:04.094Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Audit the logo image reference in `frontend/src/components/Header.tsx`: verify the `src` attribute path exactly matches the actual filename on disk (including case sensitivity), confirm the asset exists under `frontend/public/` or the correct static assets directory, and ensure the path used is compatible with the production build output (e.g., using a root-relative `/` prefix or correct Vite asset import rather than a relative path that breaks in nested routes).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Header.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Header.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Ensure the logo asset file is physically present in `frontend/public/` (or the appropriate static assets folder) and is included in the production build output. If the file is missing, add or restore it. If it was previously imported via a JS/TS import rather than placed in `public/`, standardise the approach so it is reliably bundled.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/public/assets/generated/styo-logo-transparent.dim_200x80.png"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Also verify and fix the logo image reference in `frontend/src/components/Footer.tsx` using the same corrected path/import approach applied to the Header, so the logo is consistent and working across the entire site.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Footer.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Footer.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Header.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
